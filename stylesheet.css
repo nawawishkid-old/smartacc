@@ -1,0 +1,95 @@
+* {
+  box-sizing: border-box;
+}
+html, body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+}
+/*=== nav bar ===*/
+nav {
+  width: 100%;
+  height: 10%;
+  background-color: black;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.nav-tab {
+  width: 50%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.nav-tab:not(last-child) {
+  border-right: 1px solid white;
+}
+.nav-tab:hover {
+  background-color: rgba(216,216,216,0.3);
+  cursor: pointer;
+}
+/*=== hiding ===*/
+.hide {
+  display: none;
+}
+/*=== modal box ===*/
+.modal-box-bg {
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.8);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  z-index: 2;
+  top: 0;
+}
+.modal-box {
+  width: 90%;
+  height: 90%;
+  background-color: white;
+}
+.modal-box-head {
+  width: 100%;
+  height: 10%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.modal-box-head h2 {
+  margin: 0;
+}
+.modal-box-body {
+  width: 90%;
+  height: 80%;
+  border: 1px solid rgba(0,0,0,0.3);
+  margin: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.modal-box-content {
+  width: 100%;
+  height: 100%;
+}
+#newForm {
+  width: 100%;
+  height: 70%;
+  text-align: center;
+  padding-top: 50px;
+  /*display: flex;*/
+  justify-content: center;
+  align-items: center;
+}
+.modal-box-p {
+  margin: 0;
+}
+.modal-box-status {
+  width: 100%;
+  height: 30%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
