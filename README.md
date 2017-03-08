@@ -1,2 +1,2 @@
 # smartacc
-I try to create smart accounting web app for tracking my financial behavior.
+Create cashflow data table for user in overview tab
