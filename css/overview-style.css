@@ -1,0 +1,127 @@
+.hide {
+	display: none;
+}
+.ov-wrapper {
+	width: 100%;
+	height: 100%;
+}
+.ov-section {
+	width: 100%;
+	height: 100%;
+	padding: 10px;
+	background-color: gainsboro;
+}
+.ov-section header {
+  margin: 0;
+  height: 15%;
+  width: 100%;
+}
+.ov-section header h3 {
+  width: 100%;
+  height: 50%;
+}
+.ov-section header > section {
+  width: 100%;
+  height: 50%;
+}
+.ov-section header > section > section {
+  position: relative;
+}
+.ov-section header .ov-header-section-left {
+  float: left;
+}
+.ov-section header .ov-header-section-right {
+  float: right;
+  text-align: right;
+}
+.ov-section article {
+	width: 100%;
+	height: 85%;
+	overflow: auto;
+	background-color: whitesmoke;
+}
+
+/* === TABLE === */
+table {
+  border: 1px solid black;
+  width: 100%;
+}
+th {
+	background-color: black;
+	color: white;
+}
+th:not(:last-of-type) {
+  border-right: 1px solid black;
+}
+td {
+  border-top: 1px solid black;
+  word-break: break-word;
+}
+td:not(:last-of-type) {
+  border-right: 1px solid black;
+}
+td.ov-td-key {
+	text-align: center;
+}
+td.ov-td-value {
+	text-align: right;
+}
+td.minus {
+  background-color: #ff9999;
+}
+td.plus {
+	background-color: #99ff99;
+}
+
+/* === FORM === */
+form {
+	display: none;
+}
+
+/* === TH SELECT DIV === */
+.ov-cashflow-th-select-div {
+  position: relative;
+}
+.ov-cashflow-th-select-box {
+  position: relative;
+}
+.ov-cashflow-th-select {
+  width: 100%;
+  font-weight: bold;
+}
+.ov-cashflow-th-select-prevent {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+}
+.ov-cashflow-th-checkbox-div {
+  width: 100%;
+  border: 1px #dadada solid;
+  display: none;
+  position: absolute;
+  text-align: left;
+  background-color: white;
+}
+.ov-cashflow-th-checkbox-wrapper {
+  width: 100%;
+  max-height: 100px;
+  overflow: auto;
+  background-color: whitesmoke;
+}
+.ov-cashflow-th-form-submit {
+	width: 100%;
+}
+.ov-cashflow-th-checkbox-label {
+  display: block;
+	font-weight: 100;
+	font-size: 0.7em;
+	color: black;
+}
+.ov-cashflow-th-checkbox-label:hover {
+  cursor: pointer;
+  background-color: black;
+  color: white;
+}
+/* === END OF TH SELECT DIV === */
