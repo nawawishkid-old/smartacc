@@ -1,2 +1,2 @@
 # smartacc
-I try to create smart accounting web app for tracking my financial behavior.
+I'm trying to create an app about personal financial management that tracks and analyze your financial behavior.
