@@ -9,9 +9,6 @@ window.addEventListener("load", function() {
     console.log("--- transactionType.onchange ---");
     //this.dataset.transact = this.value;
     this.dataset.recentValue = this.value;
-    if(this.value == this.dataset.recentValue) {
-
-    }
     // 1.2.1 Display related elements
     displayRelatedElem();
     // 1.2.2 Fetch cat/acc and subcat/subacc depends on transaction type
@@ -30,9 +27,11 @@ window.addEventListener("load", function() {
     // Account in income or expense is always the same,
     // not necessary changing.
     } else {
-      var cat = document.getElementById("cat");
+      var cat = document.getElementById("cat"),
+          subcat = document.getElementById("subcat"),
+          inex;
       fetchMaininputData(cat);
-      removeOption(subcat); 
+      removeOption(subcat);
     }
   });
 
@@ -149,14 +148,36 @@ window.addEventListener("load", function() {
   }
 
   // --- 2. FETCHING DATA AND SELECTING [OPTION] ELEMENT
+  function setRecentValueForCategory(targetElem) {
+    if(targetElem.id != "cat" && targetElem.id != "subcat") {
+      return false;
+    }
+    var transact = document.getElementById("transactionType").value;
+    if(transact == "in") {
+      targetElem.dataset.recentInValue = targetElem.value;
+    } else {
+      targetElem.dataset.recentExValue = targetElem.value;
+    }
+  }
   // --- 2.1 SELECT INITIAL OPTION ON [SELECT] ELEMENT ---
   var select = document.querySelectorAll("select[data-transact]");
   console.log("--- select [select] element option ---");
   for(var i = 0; select[i]; i++) {
     var s = select[i],
-        data = s.dataset.transact,
-        opt = s.querySelector("option[value='" + data + "']");
-    opt.selected = true;
+        transact = document.getElementById("transactionType").dataset.transact;
+    s.querySelector("option[value='" 
+          + s.dataset.transact + "']").selected = true;
+    if(s.id == "cat" || s.id == "subcat") {
+      setRecentValueForCategory(s);
+    }
+    // Set recent value for income/expense category.
+    /*if(s.id == "cat" || s.id == "subcat") {
+      if(transact == "in") {
+        s.dataset.recentInValue = s.value;
+      } else {
+        s.dataset.recentExValue = s.value;
+      }
+    }*/
   }
 
   // --- 2.2 FETCH [OPTION] ELEMENTS OF SUBCATEGORY/SUBACCOUNT WHEN CATEGORY/ACCOUNT VALUE IS CHANGED ---
@@ -168,10 +189,24 @@ window.addEventListener("load", function() {
         var optParent = document.querySelector(".sub-input[data-input-group=" + this.dataset.inputGroup + "]");
         fetchSubinputData(this, optParent);
       }
+      // Set recent value for income/expense category.
+      if(this.id == "cat") {
+        setRecentValueForCategory(this);
+      }
+      /*if(this.id == "cat") {
+        var transact = document.getElementById("transactionType").value;
+        if(transact == "in") {
+          this.dataset.recentInValue = this.value;
+        } else {
+          this.dataset.recentExValue = this.value;
+        }
+      }*/
     });
   }
 
-  // --- 2.3 PREVENT USER SELECTING THE SAME SUBACCOUNT BY DISABLING THE OTHER ELEMENT (FOR TRANSACTION_TYPE = 'TR' ONLY) ---
+  // --- 2.3 SELECT 
+
+  // --- 2.4 PREVENT USER SELECTING THE SAME SUBACCOUNT BY DISABLING THE OTHER ELEMENT (FOR TRANSACTION_TYPE = 'TR' ONLY) ---
   // Initial
   if(transactionType === "tr") {
     preventSameOption();
@@ -206,6 +241,12 @@ window.addEventListener("load", function() {
       console.log("--- xhr.onload ---");
       var obj = JSON.parse(this.responseText);
       createOption(optionParent, obj);
+      /*
+      // Select recent value of subcat
+      if(optionParent.id == "subcat") {
+        document.querySelector("option.subcat-opt[value=" 
+          + optionParent.dataset.recentValue + "]").selected = true;
+      }*/
       if(onchangeEl.name == "tAcc") {
         preventSameOption();
       }
@@ -213,7 +254,7 @@ window.addEventListener("load", function() {
   }
   // SET NEW [OPTION] OF CATEGORY/SUBCATEGORY WHEN TARGETED ELEMENT VALUE IS CHANGED !
   function fetchMaininputData(optionParent) {
-    console.log("--- fetchMaininputData() ---");
+    console.log("--- fetchMaininputData(optionParent) ---");
     // Remove recent [OPTION] elements.
     removeOption(optionParent);
     var transact = document.getElementById("transactionType");
@@ -227,6 +268,23 @@ window.addEventListener("load", function() {
       console.log("--- xhr.onload ---");
       var obj = JSON.parse(this.responseText);
       createOption(optionParent, obj);
+      // Select [OPTION] of recent value.
+      var cat = document.getElementById("cat"),
+          inex;
+      if(transact.value == "in") {
+        inex = cat.dataset.recentInValue;
+      } else if (transact.value == "ex") {
+        inex = cat.dataset.recentExValue;
+      }
+      console.log("inex = " + inex);
+      var opt = cat.querySelector("option.cat-opt[value='" 
+          + inex + "']");
+      console.log(opt);
+      if(opt != null) {
+        opt.selected = true;
+      }
+      cat.setAttribute("data-recent-" 
+        + transact.value + "-value", cat.value);
     }
   }
   // Remove recent [OPTION] elements. Use in fetchMaininputData() and fetchSubcatAndAcc() function.
