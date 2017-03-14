@@ -1,26 +1,3 @@
-<!DOCTYPE html>
-<html>
-<head>
-	<title>Insert New Record</title>
-	<style>
-	table {
-		border: 1px solid black;
-	}
-	th:first-of-type {
-		border-right: 1px solid black;
-	}
-	tr {
-		border-top: 1px solid black;
-	}
-	td {
-		border-top: 1px solid black;
-	}
-	td.key {
-		border-right: 1px solid black;
-	}
-	</style>
-</head>
-<body>
 <?php
 	$con = mysqli_connect("localhost", "root", "", "smartacc")
 		or die ("Error: connection failed, " . mysqli_connect_error());
@@ -31,291 +8,187 @@
 	mysqli_query($con, "SET character_set_connection=utf8")
 		or die ("Error: Cannot set character set connection.");
 
-	/*
-	function validate($data) {
-		$data = trim($data);
-		$data = stripslashes($data);
-		$data = htmlspecialchars($data);
-	}
-	*/
-
 	if($_SERVER["REQUEST_METHOD"] == "POST") {
-		
-		$date = @$_POST["date"];
-		$year = @$_POST["year"];
-		$month = @$_POST["month"];
-		$day = @$_POST["day"];
-		$weekday = @$_POST["weekday"];
-		$week = @$_POST["week"];
-		$input_type = @$_POST["inputType"];
-		$in_type = $cat = $subcat = $payer = $acc = $sub_acc = NULL;
-		$necessity = $ex_cat = $ex_subcat = $payee = NULL;
-		$from_acc = $from_subacc = $to_acc = $to_subacc = NULL;
-		$amount = @$_POST["amount"];
-		$note = @$_POST["note"];
+		$transact = $_POST["transactionType"];
+		$err = array();
 
-		/*
-		echo "Date: {$date}<br>"
-			. "Year: {$year}<br>"
-			. "Month: {$month}<br>"
-			. "Day: {$day}<br>"
-			. "Weekday: {$weekday}<br>"
-			. "Week: {$week}<br>";
-
-		echo "Input type: {$input_type}<br>";
-		*/
-
-		switch($input_type) {
-			case "in":
-				$in_type = $_POST["incomeType"];
-				$cat = $_POST["inCategories"];
-				$subcat = $_POST["inSubcategories"];
-				$payer = $_POST["payer"];
-				$acc = $_POST["account"];
-				$sub_acc = $_POST["subaccount"];
-
-				$update = "total_income";
-
-				/*
-				echo "Income type: {$income_type}<br>"
-					. "Income categories: {$in_cat}<br>"
-					. "Income subcategories: {$in_subcat}<br>"
-					. "Payer: {$payer}<br>"
-					. "Account: {$acc}<br>"
-					. "Subaccount: {$sub_acc}<br>";
-				*/
-				break;
-
-			case "ex":
-				$necessity = $_POST["necessity"];
-				$cat = $_POST["exCategories"];
-				$subcat = $_POST["exSubcategories"];
-				$payee = $_POST["payee"];
-				$acc = $_POST["account"];
-				$sub_acc = $_POST["subaccount"];
-
-				$update = "total_expense";
-
-				/*
-				echo "Necessity: {$necessity}<br>"
-					. "Expense categories: {$ex_cat}<br>"
-					. "Expense subcategories: {$ex_subcat}<br>"
-					. "Payee: {$payee}<br>"
-					. "Account: {$acc}<br>"
-					. "Subaccount: {$sub_acc}<br>";
-				*/
-				break;
-
-			case "tr":
-				$from_acc = $_POST["fromAccount"];
-				$from_subacc = $_POST["fromSubaccount"];
-				$to_acc = $_POST["toAccount"];
-				$to_subacc = $_POST["toSubaccount"];
-				
-				/*
-				echo "From account: {$from_acc}<br>"
-					. "From subaccount: {$from_subacc}<br>"
-					. "To account: {$to_acc}<br>"
-					. "To subaccount: {$to_subacc}<br>";
-				*/
+		// --- 1. DATA VALIDATION ---
+		// --- 1.1 CHECK DATA ARRAY LENGTH ---
+		// Check the number of data.
+		function checkDataLength($array, $length) {
+			$num = count($array);
+			if($num !== $length) {
+				global $err;
+				array_push($err, "Expect {$length} data length, gets {$num}.");
+			}
 		}
-
-		$data_array = array
-			(
-				"date" => $date,
-				"year" => $year,
-				"month" => $month,
-				"day" => $day,
-				"weekday" => $weekday,
-				"week" => $week,
-				"input type" => $input_type,
-				"necessity" => $necessity,
-				"income type" => $in_type,
-				"categories" => $cat,
-				"subcategories" => $subcat,
-				"from account" => $from_acc,
-				"from subaccount" => $from_subacc,
-				"account" => $acc,
-				"subaccount" => $sub_acc,
-				"to account" => $to_acc,
-				"to subaccount" => $to_subacc,
-				"payer" => $payer,
-				"payee" => $payee,
-				"amount" => $amount,
-				"note" => $note
-			);
-
-		$str = "INSERT INTO record 
-			(
-				date, 
-				year, 
-				month, 
-				day, 
-				weekday, 
-				week, 
-				transaction_type, 
-				necessity,
-				in_type,
-				categories, 
-				subcategories, 
-				from_acc, 
-				from_subacc, 
-				acc, 
-				subacc, 
-				to_acc, 
-				to_subacc, 
-				payer, 
-				payee, 
-				amount, 
-				note
-			)
-			VALUES 
-			(
-				'{$date}', 
-				'{$year}', 
-				'{$month}',
-				'{$day}', 
-				'{$weekday}', 
-				'{$week}',
-				'{$input_type}',
-				'{$necessity}', 
-				'{$in_type}',
-				'{$cat}', 
-				'{$subcat}',
-				'{$from_acc}', 
-				'{$from_subacc}',
-				'{$acc}', 
-				'{$sub_acc}', 
-				'{$to_acc}',
-				'{$to_subacc}', 
-				'{$payer}', 
-				'{$payee}',
-				'{$amount}', 
-				'{$note}'
-			);";
-
-		// === UPDATE OR INSERT CASHFLOW YEARLY, MONTHLY, WEEKLY AND DAILY TABLE === //
-		// Check daily.
-		$strcheckday = "SELECT year, month, day
-									FROM cashflow_daily
-									WHERE year = {$year} AND month = {$month} AND day = {$day};";
-		$querycheckday = mysqli_query($con, $strcheckday)
-			or die ("Error: could not send query CHECK DAY, " . mysqli_error($con));
-
-		// If data exists, update, else insert a new one.
-		if(empty(mysqli_fetch_all($querycheckday, MYSQLI_ASSOC))) {
-			$str .= "INSERT INTO cashflow_daily (year, month, day, {$update})
-								VALUES ({$year}, {$month}, {$day}, {$amount});";
+		// Check number of data.
+		if($transact !== "tr") {
+			checkDataLength($_POST, 12);
+		} else if ($transact === "tr") {
+			checkDataLength($_POST, 10);
 		} else {
-			$str .= "UPDATE cashflow_daily
-							SET {$update} = {$update} + {$amount}
-							WHERE year = {$year} AND month = {$month} AND day = {$day};";
+			array_push($err, "Incorrect number of data length.");
+		}
+		// --- 1.2 ALL DATA SIMPLE VALIDATION ---
+		// Single simple validation.
+		function validate_simple($data) {
+			$data = trim($data);
+			$data = stripslashes($data);
+			$data = htmlspecialchars($data);
+			return $data;
+		}
+		for($i = 0; $i < count($_POST); $i++) {
+			$data[key($_POST)] = validate_simple(array_values($_POST)[$i]);
+			next($_POST);
 		}
 
-		// Check weekly
-		$strcheckweek = "SELECT year, month, week
-											FROM cashflow_weekly
-											WHERE year = {$year} AND month = {$month} AND week = {$week};";
-		$querycheckweek = mysqli_query($con, $strcheckweek)
-			or die ("Error: could not send query CHECK WEEK, " . mysqli_error($con));
+		$transact = $data["transactionType"];
+		$date = $data["date"];
+		$time = $data["time"];
+		$amount = $data["amount"];
+		$note = $data["note"];
+		$cat = $subcat = $acc = $subacc = 
+		$necessity = $income_type = $payer = 
+		$payee = $facc = $fsubacc = $tacc = $tsubacc = null;
 
-		// If data exists, update, else insert a new one.
-		if(empty(mysqli_fetch_all($querycheckweek, MYSQLI_ASSOC))) {
-			$str .= "INSERT INTO cashflow_weekly (year, month, week, {$update})
-							VALUES ({$year}, {$month}, {$week}, {$amount});";
-		} else {
-			$str .= "UPDATE cashflow_weekly
-							SET {$update} = {$update} + {$amount}
-							WHERE year = {$year} AND month = {$month} AND week = {$week};";
+		// --- 1.3 VALIDATE TRANSACTION TYPE ---
+		if($transact != "in"
+			&& $transact != "ex"
+			&& $transact != "tr")
+		{array_push($err, "Error@transaction_type: Incorrect value!");}
+
+		// Specific strong validation.
+		function validate_specific($data, $data_name, $regex) {
+			if(!preg_match($regex, $data)) {
+				global $err;
+				array_push($err, ucfirst($data_name) . " is incorrect!");
+			}
+			return $data;
 		}
+		// --- 1.4 VALIDATE DATE AND TIME ---
+		// Only dddd-dd-dd is allowed.
+		validate_specific($date, "date", "/^\d{4}-\d{2}-\d{2}$/");
+		validate_specific($time, "time", "/^\d{2}:\d{2}$/");
+		// --- 1.4 VALIDATE AMOUNT ---
+		// Only digits are allowed.
+		validate_specific($amount, "amount", "/^[.\d]*$/");
+		// --- 1.5 VALIDATE NOTE ---
+		// Only word characters, Thai language, space, and dash are allowed.
+		validate_specific($note, "note", "/^[\wก-เ -]*$/"); // Last character in Thai language Regex is 'เ', [ก-เ] = [ก-ฮ๐-๙เ]
 
-		// Check monthly
-		$strcheckmonth = "SELECT year, month
-											FROM cashflow_monthly
-											WHERE year = {$year} AND month = {$month};";
-		$querycheckmonth = mysqli_query($con, $strcheckmonth)
-			or die ("Error: could not send query CHECK MONTH, " . mysqli_error($con));
-
-		// If data exists, update, else insert a new one.
-		if(empty(mysqli_fetch_all($querycheckmonth, MYSQLI_ASSOC))) {
-			$str .= "INSERT INTO cashflow_monthly (year, month, {$update})
-							VALUES ({$year}, {$month}, {$amount});";
-		} else {
-			$str .= "UPDATE cashflow_monthly
-							SET {$update} = {$update} + {$amount}
-							WHERE year = {$year} AND month = {$month};";
+		// Database matching check.
+		function validate_database($con, $data_name, $column, $table, $where = null) {
+			$str = "SELECT DISTINCT $column FROM $table $where;";
+			$query = mysqli_query($con, $str);
+			$result = mysqli_fetch_all($query, MYSQLI_NUM);
+			if(!@$result[0]) {
+				global $err;
+				array_push($err, "Unknown $data_name.");
+			}
 		}
+		// Set variable in accordance with transaction type.
+		if($transact !== "tr") {
+			// --- 1.5 VALIDATE CATEGORY/SUBCATEGORY ---
+			// --- 1.5.1 DATA STRING CHECK ---
+			$cat = $data["cat"];
+			$subcat = $data["subcat"];
+			// Only word characters and Thai language are allowed. Space is not allowed.
+			validate_specific($cat, "category", "/^[\wก-เ ]*$/");
+			validate_specific($subcat, "subcategory", "/^[\wก-เ ]*$/");
+			// --- 1.5.2 DATABASE MATCHING CHECK ---
+			validate_database($con, "category/subcategory",
+				"{$transact}_cats, {$transact}_subcats",
+				"{$transact}_categories",
+				"WHERE {$transact}_cats = '$cat' AND {$transact}_subcats = '$subcat'");
+			// --- 1.5 VALIDATE ACCOUNT/SUBACCOUNT ---
+			// --- 1.5.1 DATA STRING CHECK ---
+			$acc = $data["acc"];
+			$subacc = $data["subacc"];
+			// Only word characters and Thai language are allowed. Space is not allowed.
+			validate_specific($acc, "account", "/^[\wก-เ ]*$/");
+			validate_specific($subacc, "subaccount", "/^[\wก-เ ]*$/");
+			// --- 1.5.2 DATABASE MATCHING CHECK ---
+			validate_database($con, "account/subaccount",
+				"account, sub_account", "account",
+				"WHERE account = '$acc' AND sub_account = '$subacc'");
 
-		// Check yearly
-		$strcheckyear = "SELECT year
-											FROM cashflow_yearly
-											WHERE year = {$year};";
-		$querycheckyear = mysqli_query($con, $strcheckyear)
-			or die ("Error: could not send query CHECK YEAR, " . mysqli_error($con));
-
-		// If data exists, update, else insert a new one.
-		if(empty(mysqli_fetch_all($querycheckyear, MYSQLI_ASSOC))) {
-			$str .= "INSERT INTO cashflow_yearly (year, {$update})
-							VALUES ({$year}, {$amount});";
-		} else {
-			$str .= "UPDATE cashflow_yearly
-							SET {$update} = {$update} + {$amount}
-							WHERE year = {$year};";
-		}
-		// === END OF UPDATE OR INSERT CASHFLOW YEARLY, MONTHLY, WEEKLY AND DAILY TABLE === //
-
-		//echo $str;
-
-		$query = mysqli_multi_query($con, $str)
-			or die ("Error: could not insert new record " . mysqli_error($con) . "<br>");
-
-		if($query) { $complete = "Insert complete!";}
-
-		mysqli_close($con);
-	}
-?>
-<h1><?php echo @$complete; ?></h1>
-<h1 id="status">I take you back in 3</h1>
-<p>or click <a href="/smartacc/new-record.php">here</a></p>
-<div id="output">
-	<table>
-		<tr>
-			<th>KEY</th>
-			<th>VALUE</th>
-		</tr>
-		<?php
-			foreach ($data_array as $key => $v) {
-				if($v == "") {
-					continue;
-				} else {
-					echo "<tr><td class='key'>{$key}</td><td class='value'>{$v}</td></tr>";
+			if($transact === "in") {
+				// --- 1.6 VALIDATE INCOME TYPE ---
+				$income_type = $data["incomeType"];
+				if($income_type !== "act" && $income_type !== "pas") {
+					array_push($err, "Income type is incorrect!");
 				}
+				// --- 1.7 VALIDATE PAYER ---
+				$payer = $data["payer"];
+				validate_specific($payer, "payer", "/^[\wก-เ -]*$/");
+			} else {
+				// --- 1.6 VALIDATE NECESSITY ---
+				$necessity = $data["necessity"];
+				if($necessity != 0 && $necessity != 1) {
+					//$err = "Necessity is incorrect!";
+					array_push($err, "Necessity is incorrect!");
+				}
+				// --- 1.7 VALIDATE PAYEE ---
+				$payee = $data["payee"];
+				validate_specific($payee, "payee", "/^[\wก-เ -]*$/");
 			}
-		?>
-	</table>
-</div>
-<script>
-	window.onload = function() {
-		var status = document.getElementById("status"),
-				n = 3,
-				interval = setInterval(function() {x();}, 1000);
-
-		function x() {
-			console.log("=== x() ===");
-			console.log(n);
-			console.log(status.innerHTML);
-			n--;
-			status.innerHTML = "I take you back in " + n;
-
-			if(n === 0) {
-				clearInterval(interval);
-			}
+		} else {
+			// --- 1.4 VALIDATE FROM/TO ACCOUNT/SUBACCOUNT ---
+			// --- 1.4.1 STRING CHECK ---
+			$facc = $data["fAcc"];
+			validate_specific($facc, "from_account", "/^[\wก-เ ]*$/");
+			$fsubacc = $data["fSubacc"];
+			validate_specific($fsubacc, "from_subaccount", "/^[\wก-เ ]*$/");
+			$tacc = $data["tAcc"];
+			validate_specific($tacc, "to_account", "/^[\wก-เ ]*$/");
+			$tsubacc = $data["tSubacc"];
+			validate_specific($tsubacc, "to_subaccount", "/^[\wก-เ ]*$/");
+			// --- 1.4.2 DATABASE MATCHING CHECK ---
+			validate_database($con, "from_account/from_subaccount",
+				"account, sub_account", "account",
+				"WHERE account = '$facc' AND sub_account = '$fsubacc'");
+			validate_database($con, "to_account/to_subaccount",
+				"account, sub_account", "account",
+				"WHERE account = '$tacc' AND sub_account = '$tsubacc'");
 		}
-
-		setTimeout(function() {
-			window.location = '/smartacc/new-record.php';
-		}, 3000);
+	} else {
+		die ("Error@REQUEST_METHOD");
 	}
-</script>
-</body>
-</html>
+
+	// --- 2. ERROR CHECKING ---
+	if(count($err) !== 0) {
+		$status = 0;
+		$status_text = $err[0];
+		$responseArr = array("status" => $status, "status_text" => $status_text);
+		echo json_encode($responseArr);
+		exit();
+	}
+
+	// --- 3. UPDATE DATABASE ---
+	$str = "INSERT INTO record (
+						date, time, transaction_type, necessity, in_type,
+						categories, subcategories, from_acc, from_subacc,
+						acc, subacc, to_acc, to_subacc, payer, payee,
+						amount, note
+					)
+					VALUES (
+						'{$date}', '{$time}', '{$transact}',{$necessity},
+						'{$income_type}', '{$cat}', '{$subcat}', '{$facc}',
+						'{$fsubacc}', '{$acc}', '{$subacc}', '{$tacc}', '{$tsubacc}',
+						'{$payer}', '{$payee}', {$amount}, '{$note}'
+					);";
+
+	$query = mysqli_query($con, $str) or die ("Error: could not send query, " . mysqli_error($con));
+
+	// --- 4. SENDING JSON TO JAVASCRIPT ---
+	if($query) {
+		$status = 1;
+		$status_text = "Update complete!";
+	}
+	$responseArr = array("status" => $status, "status_text" => $status_text);
+	echo json_encode($responseArr);
+	//echo "status = {$status}\nstatus_text = {$status_text}\n";
+
+	mysqli_close($con);
+?>
