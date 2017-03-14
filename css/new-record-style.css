@@ -1,123 +1,194 @@
-* {
-  box-sizing: border-box;
+.edit-transact-sec {
+	width: 100%;
+	height: 100%;
 }
-html, body {
-  margin: 0;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
+form#formRecord {
+	width: 100%;
+	height: 100%;
 }
-/*=== hiding ===*/
-.hide {
-  display: none;
+.input-sec {
+	width: 100%;
+	height: 10%;
+	display: none;
 }
-
-/* ============================== */
-/* ===== ADD RECORD WRAPPER ===== */
-/* ============================== */
-#addRecordWrapper {
-  width: 100%;
-  height: 90%;
-  overflow-x: hidden;
+.input-sec > section {
+	height: 100%;
 }
-/* === FORM DIVISION === */
-#formDivision {
-  width: 100%;
-  padding: 5px;
+.input-sec .list {
+	width: 40%;
+	display: flex;
+	align-items: center;
+	float: left;
+	padding: 0.5em;
 }
-#formRecord {
-  height: 90%;
-  width: 100%;
-  overflow-x: hidden;
+.input-sec .value {
+	width: 60%;
+	float: right;
+	overflow: hidden;
 }
-/*=== modal box ===*/
-.modal-box-bg {
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0,0,0,0.8);
-  display: none;
-  justify-content: center;
-  align-items: center;
-  position: absolute;
-  z-index: 2;
-  top: 0;
+.input-sec .value > .input {
+	text-align: right;
+	float: right;
 }
-.modal-box {
-  width: 90%;
-  height: 90%;
-  background-color: white;
+.input-sec .value > .input:not(textarea) {
+	width: 50%;
+	height: 100%;
 }
-.modal-box-head {
-  width: 100%;
-  height: 10%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.modal-box-head h2 {
-  margin: 0;
-}
-.modal-box-body {
-  width: 90%;
-  height: 80%;
-  border: 1px solid rgba(0,0,0,0.3);
-  margin: auto;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.modal-box-content {
-  width: 100%;
-  height: 100%;
-}
-#newForm {
-  width: 100%;
-  height: 70%;
-  text-align: center;
-  padding-top: 50px;
-  /*display: flex;*/
-  justify-content: center;
-  align-items: center;
-}
-.modal-box-p {
-  margin: 0;
-}
-.modal-box-status {
-  width: 100%;
-  height: 30%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.input {
+	border: none;
+	background-color: rgba(0,0,0,0);
+	cursor: initial;
 }
 
-/* === REALTIME OUTPUT === */
-#realtimeOutputDivision {
-  width: 100%;
-  padding: 5px;
-}
-table {
-  border: 1px solid black;
-  width: 100%;
-}
-th:first-of-type {
-  border-right: 1px solid black;
-}
-td {
-  border-top: 1px solid black;
+/* --- TIME INPUT DIVISION --- */
+.time-div {
   width: 50%;
+  height: 100%;
+  display: flex;
+  float: right;
+  /*border: 1px solid blue;*/
 }
-td.table-key {
-  border-right: 1px solid black;
+.time-div input {
+  width: 80%;
+  height: 100%;
+  border: none;
+  outline: none;
+  margin: 0;
+  padding: 0;
+  text-align: center;
 }
-td.table-val {
-  color: red;
+.get-time-now-div {
+  width: 20%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #a6a6a6;
+  cursor: pointer;
+  transition: background-color 0.4s ease-out;
+  /*border-left: 1px solid blue;*/
+}
+.get-time-now-div:hover {
+	background-color: #8c8c8c;
+}
+#getTimeNow {
+  width: .5em;
+  height: .5em;
+  border: 1px solid black;
+  border-radius: 50%;
+  background-color: black;
+  cursor: pointer;
 }
 
-/* === SUBMIT BTN DIVISION === */
-#submitBtnDivision {
-  width: 100%;
+/* --- ADDNEW MODAL BOX --- */
+.addnew-modalbox-background {
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	top: 0;
+	display: none;
+	justify-content: center;
+	align-items: center;
+	background-color: rgba(0,0,0,0.9);
+}
+.addnew-modalbox {
+	max-width: 80%;
+	max-height: 90%;
+	background-color: #262626;
+	color: white;
+}
+.addnew-modalbox header {
+	width: 100%;
+	min-height: 5em;
+	padding: 1.5em 2em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.addnew-input-div {
+	padding: 1.5em 1em;
+}
+.addnew-input-div h3 {
+	text-align: center;
+	margin: .5em 0;
+}
+.addnew-input-div .addnew-input {
+	width: 100%;
+	min-height: 2em;
+	border: none;
+	outline: none;
+	text-align: center;
+	font-size: 1em;
+	cursor: initial
+}
+.addnew-button-div {
+	width: 100%;
+	min-height: 5em;
+	display: flex;
+	padding-top: 2em;
+}
+.addnew-button-div button {
+	width: 50%;
+	min-height: 3em;
+	border: none;
+	outline: none;
+	background-color: black;
+	color: white;
+	font-weight: 900;
+	cursor: pointer;
+	transition: background-color 0.4s ease-out;
+}
+.addnew-button-div button:hover {
+	background-color: #333333;
+}
+button#addnewSubmitBtn[disabled] {
+	background-color: #999999;
+  cursor: default;
+  color: #cccccc;
 }
 
-/* ===================================== */
-/* ===== END OF ADD RECORD WRAPPER ===== */
-/* ===================================== */
+/* --- FOOTER --- */
+footer {
+	width: 100%;
+	height: 10%;
+	display: flex;
+}
+footer > section {
+	width: 50%;
+	height: 100%;
+}
+footer > section > button {
+	width: 100%;
+	height: 100%;
+	border: none;
+	outline: none;
+	cursor: pointer;
+	background-color: #1a1a1a;
+	color: white;
+  font-size: 1.2em;
+  transition: background-color 0.4s ease-out;
+}
+footer > section > button:hover {
+	background-color: #333333;
+}
+button#originalSubmitBtn[disabled] {
+	background-color: #999999;
+  cursor: default;
+  color: #cccccc;
+}
+
+/* --- UPDATE STATUS --- */
+.status-bar {
+	width: 100%;
+	height: 0;
+	max-height: 100%;
+	position: fixed;
+	z-index: 2;
+	top: 0;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	color: white;
+	overflow: hidden;
+	transition: height 0.2s ease-out, opacity 1s;
+}
