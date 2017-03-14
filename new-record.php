@@ -3,6 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<title>New record | SMARTACC</title>
+	<link rel="stylesheet" type="text/css" href="css/index-style.css">
 	<link rel="stylesheet" type="text/css" href="css/new-record-style.css">
 </head>
 <body>
@@ -16,6 +17,20 @@
 		mysqli_query($con, "SET character_set_connection=utf8")
 		or die ("Error: Cannot set character set connection.");
 
+		function setSelectOption($con, $column, $table, $class_name, $extension = null) { // Set default value to $extension to avoid warning.
+			$str = "SELECT DISTINCT $column FROM $table {$extension};";
+			$query = mysqli_query($con, $str)
+				or die ("Error: could not send data, " . mysqli_error($con));
+			$result = mysqli_fetch_aLL($query, MYSQLI_NUM)
+				or die ("Error: could not fetch data, " . mysqli_error($con));
+			if($result) {
+				for($i = 0; @$result[$i]; $i++) {
+					$x = $result[$i][0];
+					echo "<option class='{$class_name}-opt' value='{$x}'>{$x}</option>";
+				}
+			}
+		}
+		/*
 		fetch_data($con, "in");
 		fetch_data($con, "ex");
 		fetch_data($con, "acc");
@@ -64,164 +79,231 @@
 			echo "console.log({$input_type}OptArray);\n</script>";
 		}
 
-		mysqli_close($con);
+		mysqli_close($con);*/
 	?>
-	<div id="addRecordWrapper" class="wrapper">
-		<div id='formDivision'>
-			<form id="formRecord" name="formRecord" method="post" action="php/new-record-php.php">
-			  <div class="section" id="dateDiv">
-					Date:
-			    <input type="date" name="date" id="date" class="input" required>
-			    <input type="hidden" name="year" id="year">
-			    <input type="hidden" name="month" id="month">
-			    <input type="hidden" name="day" id="day">
-			    <input type="hidden" name="weekday" id="weekday">
-			    <input type="hidden" name="week" id="week">
-			  </div>
-			  <div class="section" id="inputTypeDiv">
-					Type of input:
-			    <select name="inputType" id="inputType" class="input" required>
-						<option class="type-option" value="ex">expense</option>
-						<option class="type-option" value="in">income</option>
-						<option class="type-option" value="tr">transfer</option>
+	<header class="index-header col-12 col-m-12">
+    <section class="header-left">
+    	<img class="icon" src="/media/smartacc/icon-back@48px-fff-min.png" title="Back" alt="Back icon"/>
+    </section>
+    <section class="header-center">
+      <a href="index.php"><h1>Smartacc</h1></a>
+    </section>
+    <section class="header-right">
+    	<!--section>img class="icon" src="/media/smartacc/icon-dotted-menu@48px-404040-min.png" title="More" alt="More icon"/-->
+    </section>
+	</header>
+	<main style="width: 100%; height: 80%; overflow: auto;">
+		<section class="edit-transact-sec">
+			<input type="hidden" name="id" class="input" value="">
+			<section class="in ex tr input-sec sec-transaction-type">
+				<section class="list">Transaction type</section>
+				<section class="value">
+			    <select name="transactionType" id="transactionType" class="input in ex tr" data-transact="" required>
+						<option class="transaction-type-opt" value="ex">expense</option>
+						<option class="transaction-type-opt" value="in">income</option>
+						<option class="transaction-type-opt" value="tr">transfer</option>
 					</select>
-			  </div>
-			  <div class="section in-only hide" id="incomeTypeDiv">
-			    Type of income:
-			    <select name="incomeType" id="incomeType" class="income-input-only input" required>
-			      <option class="income-option" value="">-- select --</option>
-			      <option class="income-option" value="act">active</option>
-			      <option class="income-option" value="pas">passive</option>
-			      <option class="income-option" value="rep">repay</option>
-			      <option class="income-option" value="give">give</option>
-			      <option class="income-option" value="none">none</option>
+				</section>
+			</section>
+			<section class="in ex tr input-sec sec-date">
+				<section class="list">Date</section>
+				<section class="value">
+			    <input type="date" name="date" id="date" class="input in ex tr" value="" required>
+			   </section>
+			</section>
+			<section class="in ex tr input-sec sec-time">
+				<section class="list">Time</section>
+				<section class="value">
+					<div class="time-div">
+			    	<input type="text" name="time" id="timePicker" class="input in ex tr" value="" 
+			    	pattern="^\d{2}:\d{2}?" maxlength="5" title="Available value is only 'HH:MM'" required>
+					  <div class="get-time-now-div">
+					    <!--div id="getTimeNow" title="Now"></div-->
+					  </div>
+					</div>
+			   </section>
+			</section>
+			<section class="in ex tr input-sec sec-amount">
+				<section class="list">Amount</section>
+				<section class="value">
+			    <input type="number" name="amount" id="amount" class="input in ex tr" step="any" value="" required>
+				</section>
+			</section>
+			<section class="ex input-sec sec-necessity">
+				<section class="list">Necessity</section>
+				<section class="value">
+			    <select name="necessity" id="necessity" class="input ex" data-transact="" required>
+			      <option class="necessity-opt" value="">-- select --</option>
+			      <option class="necessity-opt" value="1">necessary</option>
+			      <option class="necessity-opt" value="0">unnecessary</option>
 			    </select>
-			  </div>
-			  <div class="section" id="amountDiv">
-					Amount of money:
-			    <input type="number" name="amount" id="amount" class="input" step="any" required>
-			  </div>
-			  <div class="section ex-only" id="necessityDiv">
-			    Necessity:
-			    <select name="necessity" id="necessity" class="expense-input-only input" required>
-			      <option class="necessity-option" value="">-- select --</option>
-			      <option class="necessity-option" value="1">necessary</option>
-			      <option class="necessity-option" value="0">unnecessary</option>
+				</section>
+			</section>
+			<section class="in input-sec sec-income-type">
+				<section class="list">Income type</section>
+				<section class="value">
+			    <select name="incomeType" id="incomeType" class="input in" data-transact="" required>
+			      <option class="in-type-opt" value="">-- select --</option>
+			      <option class="in-type-opt" value="act">active</option>
+			      <option class="in-type-opt" value="pas">passive</option>
 			    </select>
-			  </div>
-			  <div class="section in-ex" id="categoriesDiv">
-			    Categories:
-			    <select name="exCategories" id="categories" class="in-ex-input main-input input" required>
-			      <option class="categories-option" value="">-- select --</option>
-			      <option class="categories-option" value="new">++ add new ++</option>
+				</section>
+			</section>
+			<section class="in ex input-sec sec-cat">
+				<section class="list">Category</section>
+				<section class="value">
+			    <select name="cat" id="cat" class="main-input input in ex for-addnew-modalbox" 
+			    data-input-group="category" data-tablename="cat" data-transact="" 
+			    data-recent-value="" required>
+			      <option class="cat-opt" value="">-- select --</option>
+			      <?php
+			      	setSelectOption($con, "ex_cats", "ex_categories", "cat-opt");
+			      ?>
+			      <option class="cat-opt" value="new">++ add new ++</option>
 			    </select>
-			    Subcategories:
-			    <select name="exSubcategories" id="subcategories" class="in-ex-input sub-input input" required>
-		      	<option class="subcategories-option" value="">-- select --</option>
-			      <option class="subcategories-option" value="new">++ add new ++</option>
+			  </section>
+			</section>
+			<section class="in ex input-sec sec-subcat">
+				<section class="list">Subcategory</section>
+				<section class="value">
+			    <select name="subcat" id="subcat" class="sub-input input in ex for-addnew-modalbox" 
+			    data-input-group="category" data-tablename="cat" data-transact="" 
+			    data-recent-value="" required>
+		      	<option class="subcat-opt" value="">-- select --</option>
+			      <option class="subcat-opt" value="new">++ add new ++</option>
 			      <!-- Use php to show subcat depends on selected categories-->
 			    </select>
-			  </div>
-			  <div class="section in-ex" id="accountDiv">
-			    Account:
-			    <select name="account" id="account" class="in-ex-input main-input input" required>
-			      <option class="account-option" value="">-- select --</option>
-			      <option class="account-option" value="new">++ add new ++</option>
+			  </section>
+			</section>
+			<section class="in ex input-sec sec-acc">
+				<section class="list">Account</section>
+				<section class="value">
+			    <select name="acc" id="acc" class="main-input input in ex for-addnew-modalbox" 
+			    data-input-group="account" data-tablename="acc" data-transact="" 
+			    data-recent-value="" required>
+			      <option class="acc-opt" value="">-- select --</option>
+			      <?php
+			      	setSelectOption($con, "account", "account", "acc-opt");
+			      ?>
+			      <option class="acc-opt" value="new">++ add new ++</option>
 			    </select>
-			    Subaccount:
-			    <select name="subaccount" id="subaccount" class="in-ex-input sub-input input" required>
-			      <option class="subaccount-option" value="">-- select --</option>
-			      <option class="subaccount-option" value="new">++ add new ++</option>
+			  </section>
+			</section>
+			<section class="in ex input-sec sec-subacc">
+				<section class="list">Subaccount</section>
+				<section class="value">
+			    <select name="subacc" id="subacc" class="sub-input input in ex for-addnew-modalbox" 
+			    data-input-group="account" data-tablename="acc" data-transact="" 
+			    data-recent-value="" required>
+			      <option class="subacc-opt" value="">-- select --</option>
+			      <option class="subacc-opt" value="new">++ add new ++</option>
 			      <!-- Use php to show subacc depends on selected account-->
 			    </select>
-			  </div>
-			  <!-- 
-			##########
-			INPUT TYPE TRANSFER ONLY
-			##########
-			-->
-			  <div class="section tr-only hide" id="fromAccountDiv">
-			    From account:
-			    <select name="fromAccount" id="fromAccount" class="transfer-input-only input" required>
-			      <option class="from-account-option" value="">-- select --</option>
-			      <option class="from-account-option" value="new">++ add new ++</option>
+			  </section>
+			</section>
+			<section class="in input-sec sec-payer">
+				<section class="list">Payer</section>
+				<section class="value">
+					<input type="text" name="payer" id="payer" class="input in" autocomplete="on" value="" required>
+			  </section>
+			</section>
+			<section class="ex input-sec sec-payee">
+				<section class="list">Payee</section>
+				<section class="value">
+					<input type="text" name="payee" id="payee" class="input ex" autocomplete="on" value="" required>
+			  </section>
+			</section>
+			<section class="tr input-sec sec-f-acc">
+				<section class="list">From account</section>
+				<section class="value">
+			    <select name="fAcc" id="fAcc" class="main-input input tr for-addnew-modalbox" 
+			    data-input-group="from-account" data-tablename="acc" data-transact="" 
+			    data-recent-value="" required>
+			      <option class="f-acc-opt" value="">-- select --</option>
+			      <?php
+			      	setSelectOption($con, "account", "account", "acc-opt");
+			      ?>
+			      <option class="f-acc-opt" value="new">++ add new ++</option>
 			    </select>
-			    Subaccount:
-			    <select name="fromSubaccount" id="fromSubaccount" class="transfer-input-only input" required>
-			      <option class="from-subaccount-option" value="">-- select --</option>
-			      <option class="from-subaccount-option" value="new">++ add new ++</option>
-			      <!-- changes depend on account -->
+			  </section>
+			</section>
+			<section class="tr input-sec sec-f-subacc">
+				<section class="list">From subaccount</section>
+				<section class="value">
+			    <select name="fSubacc" id="fSubacc" class="sub-input input tr for-addnew-modalbox" 
+			    data-input-group="from-account" data-tablename="acc" data-transact="" 
+			    data-recent-value="" required>
+			      <option class="f-subacc-opt" value="">-- select --</option>
+			      <option class="f-subacc-opt" value="new">++ add new ++</option>
 			    </select>
-			  </div>
-			  <div class="section tr-only hide" id="toAccountDiv">
-			    To account:
-			    <select name="toAccount" id="toAccount" class="transfer-input-only input" required>
-			      <option class="to-account-option" value="">-- select --</option>
-			      <option class="to-account-option" value="new">++ add new ++</option>
-			      <!-- depends on fromAccount -->
+			  </section>
+			</section>
+			<section class="tr input-sec sec-t-acc">
+				<section class="list">To account</section>
+				<section class="value">
+			    <select name="tAcc" id="tAcc" class="main-input input tr for-addnew-modalbox" 
+			    data-input-group="to-account" data-tablename="acc" data-transact="" 
+			    data-recent-value="" required>
+			      <option class="t-acc-opt" value="">-- select --</option>
+			      <?php
+			      	setSelectOption($con, "account", "account", "acc-opt");
+			      ?>
+			      <option class="t-acc-opt" value="new">++ add new ++</option>
 			    </select>
-			    SubAccount:
-			    <select name="toSubaccount" id="toSubaccount" class="transfer-input-only input" required>
-			      <option class="to-subaccount-option" value="">-- select --</option>
-			      <option class="to-subaccount-option" value="new">++ add new ++</option>
-			      <!-- changes depend on account-->
+			  </section>
+			</section>
+			<section class="tr input-sec sec-t-subacc">
+				<section class="list">To subaccount</section>
+				<section class="value">
+			    <select name="tSubacc" id="tSubacc" class="sub-input input tr for-addnew-modalbox" 
+			    data-input-group="to-account" data-tablename="acc" data-transact="" 
+			    data-recent-value="" required>
+			      <option class="t-subacc-opt" value="">-- select --</option>
+			      <option class="t-subacc-opt" value="new">++ add new ++</option>
 			    </select>
-			  </div>
-			  <div class="section in-only hide" id="payerDiv">
-			    Payer:
-			    <input type="text" name="payer" id="payer" class="income-input-only input" autocomplete="on" required>
-			  </div>
-			  <div class="section ex-only" id="payeeDiv">
-			    Payee:
-			    <input type="text" name="payee" id="payee" class="expense-input-only input" autocomplete="on" required>
-			  </div>
-			  <div class="section" id="noteDiv">
-			    Note:<br>
-			    <textarea name="note" id="note" class="input" cols="30" rows="5" required></textarea>
-			  </div>
-			</form>
-		</div>
+			  </section>
+			</section>
+			<section class="in ex tr input-sec sec-note">
+				<section class="list">Note</section>
+				<section class="value">
+			    <textarea name="note" id="note" class="input in ex tr" cols="30" rows="5" required></textarea>
+			  </section>
+			</section>
+		</section>
 
-		<div id="realtimeOutputDivision">
-			<h4 style="color:red">Please check this table before you submit</h4>
-			<table id='addRecTable'>
-				<thead>
-					<tr>
-						<th>Key</th>
-						<th>Value</th>
-					</tr>
-				</thead>
-				<tbody id="addRecTBody">
-				</tbody>
-			</table>
-		</div>
-		
-		<div id="submitBtnDivision">
-			<p style="color:red">You'll be able to submit only when you complete all inputs.</p>
-	  	<button id="originalSubmitBtn" form="formRecord" disabled>submit</button>
-	  </div>
-
-		<div class="modal-box-bg">
-		  <div class="modal-box">
-		    <div class="modal-box-head">
+		<div class="addnew-modalbox-background">
+		  <div class="addnew-modalbox">
+		    <header>
 		      <h2></h2>
-		    </div>
-		    <div class="modal-box-body">
-		      <div class="modal-box-content">
-		        <form action="" method="post" id="newForm">
-		          <p class="modal-box-p"></p>
-		          <p class="modal-box-p"></p>
-		          <input type="text" name="" id="newSubInput" class="modal-box-input"><br>
-		          <button type="button" id="newFormSubmitBtn" name="" disabled>Submit</button>
-		          <button type="button" class="cancel-button" id="newInputCancel">Cancel</button>
-		        </form>
-		        <div class="modal-box-status">
-		        </div>
-		      </div>
-		    </div>
+		    </header>
+		    <article>
+	      	<div class="addnew-input-div">
+	      		<div class="addnew-input-main">
+			      	<h3>MAIN</h3>
+		          <!-- Create [INPUT] or [SELECT] element via JavaScript,
+		          depends on what user have selected -->
+	          </div>
+	          <div class="addnew-input-sub">
+		          <h3>SUB</h3>
+		          <input type="text" name="" id="addnewSubInput" class="addnew-input">
+	          </div>
+	        </div>
+	        <div class="addnew-button-div">
+	          <button id="addnewSubmitBtn" disabled>Add</button>
+	          <button id="addnewCancelBtn">Cancel</button>
+          </div>
+		    </article>
 		  </div>
 		</div>
-	</div>
+	</main>
+	<footer style="width: 100%; height: 10%;">
+		<section class="submit-sec">
+	  	<button id="originalSubmitBtn" form="formRecord" title="You'll be able to update only when you complete all inputs." disabled>Update</button>
+	  </section>
+	  <section class="cancel-sec">
+	  	<button id="originalCancelBtn">Cancel</button>
+	  </section>
+	</footer>
 
 	<script src="js/new-record-script.js"></script>
 </body>
