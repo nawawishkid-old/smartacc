@@ -50,7 +50,7 @@
 		$note = $data["note"];
 		$cat = $subcat = $acc = $subacc = 
 		$necessity = $income_type = $payer = 
-		$payee = $facc = $fsubacc = $tacc = $tsubacc = null;
+		$payee = $facc = $fsubacc = $tacc = $tsubacc = "NULL";
 
 		// --- 1.3 VALIDATE TRANSACTION TYPE ---
 		if($transact != "in"
@@ -218,7 +218,7 @@
 							amount, note
 						)
 						VALUES (
-							'{$date}', '{$time}', '{$transact}',{$necessity},
+							'{$date}', '{$time}', '{$transact}', {$necessity},
 							'{$income_type}', '{$cat}', '{$subcat}', '{$facc}',
 							'{$fsubacc}', '{$acc}', '{$subacc}', '{$tacc}', '{$tsubacc}',
 							'{$payer}', '{$payee}', {$amount}, '{$note}'
@@ -226,6 +226,7 @@
 	}
 
 	// --- 4. UPDATE DATABASE ---
+	//echo $str;
 	$query = mysqli_query($con, $str) or die ("Error: could not send query, " . mysqli_error($con));
 
 	// --- 5. SENDING JSON TO JAVASCRIPT ---
