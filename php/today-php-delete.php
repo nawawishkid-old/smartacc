@@ -12,7 +12,7 @@
 		$id = $_POST["id"];
 	}
 
-	//$str = "DELETE FROM record WHERE id = '{$id}';";
+	$str = "DELETE FROM record WHERE id = '{$id}';";
 	$query = mysqli_query($con, $str) 
 		or die ("Error: could not send query, " . mysqli_error($con));
 
