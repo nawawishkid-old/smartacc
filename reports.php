@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Reports | SMARTACC</title>
   <?php
     $con = mysqli_connect("localhost", "root", "", "smartacc")
@@ -11,27 +13,87 @@
         or die ("Error: Cannot set character set client.");
     mysqli_query($con, "SET character_set_connection=utf8")
         or die ("Error: Cannot set character set connection.");
-    
-    // Set default date to SQL Wildcard
-    $year = $month = $day = "%";
+
+    if($_SERVER['REQUEST_METHOD'] == 'POST') {
+      $date = explode("/", $_POST['date']);
+      // Set default date to SQL Wildcard
+      $year = (!empty($date[0]) ? $date[0] : "%");
+      $month = (!empty($date[1]) ? $date[1] : "%");
+      $day = (!empty($date[2]) ? $date[2] : "%");
+    } else {
+      $year = $month = $day = "%";
+    }
 
     // Retrieved date value
     $transaction_type = "EXPENSE";
-    $year = "2016";
+    //$year = "2016";
 
-    function fetch($query) {
+    // Send query and fetch data from database
+    function fetch($query, $array_format = null) {
+      if($array_format !== MYSQLI_ASSOC
+          && $array_format !== MYSQLI_NUM
+          && $array_format !== MYSQLI_BOTH
+        ) {$array_format = null;}
       global $con;
       $result = mysqli_query($con, $query) or die ("Error: could not send query, " . mysqli_error($con));
-      $rows = mysqli_fetch_all($result, MYSQLI_ASSOC);
+      if(is_null($array_format)) {
+        $rows = mysqli_fetch_all($result);
+      } else {
+        $rows = mysqli_fetch_all($result, $array_format);
+      }
+      //print_r($rows);
       return $rows;
+    }
+    // Show numeric data array
+    function data_table($show_type, $thead, $col_head_arr, $data_arr) {
+      // Validate arguments
+      if(gettype($thead) !== 'string'
+         || gettype($col_head_arr) !== 'array'
+         || gettype($data_arr) !== "array"
+      ) {return false;}
+      $colhead = $col_head_arr;
+      $table = "<table><thead><td>{$thead}</td></thead><tbody><tr>";
+      // Set column header of table
+      for($i = 0; $i < count($colhead); $i++) {
+        $table .= "<td>{$colhead[$i]}</td>";
+      }
+      $total_amount = 0;
+      if($show_type === "num") {
+        for($i = 0; $i < count($data_arr); $i++) {
+          $table .= "</tr><tr>";
+          for($j = 0; $j < count($data_arr[$i]); $j++) {
+            $value = $data_arr[$i][$j];
+            if(count($data_arr[$i]) - $j === 1) {
+              $total_amount += $value;
+              $value = number_format($value, 2);
+            } else {
+              $value = ucfirst($value);
+            }
+            $table .= "<td>{$value}</td>";
+          }
+          $table .= "</tr>";
+        }
+      } else if($show_type === "assoc") {
+        for($i = 0; $i < count($data_arr); $i++) {
+          foreach ($data_arr[$i] as $k => $v) {
+            $key = ucfirst($k);
+            $value = number_format($v, 2);
+            $total_amount += $v;
+            $table .= "<tr><td>{$key}</td><td>{$value}</td></tr>";
+          }
+        }
+      } else {return false;}
+      $table .= "<tr><td>Total</td><td>" . number_format($total_amount, 2) . "</td></tr>";
+      $table .= "</tbody></table><hr>";
+      echo $table;
     }
 
     // Fetch total amount based on category
     function totalAmount_category($transaction_type) {
-      if($transaction_type !== "INCOME"
-          && $transaction_type !== "EXPENSE"
+      if($transaction_type !== "in"
+          && $transaction_type !== "ex"
         ) {return false;}
-      $tr_type = ($transaction_type === "INCOME" ? "in" : "ex");
+      $tr_type = $transaction_type;
       global $year, $month, $day;
       $query = "SELECT DISTINCT {$tr_type}_categories.{$tr_type}_cats AS category, 
                   (
@@ -40,69 +102,118 @@
                     WHERE transaction_type = '{$tr_type}'
                     AND categories = {$tr_type}_categories.{$tr_type}_cats
                     AND date LIKE '{$year}-{$month}-{$day}'
-                  ) AS total_amount
+                  ) AS Amount
                 FROM {$tr_type}_categories
                 INNER JOIN record
                 ON {$tr_type}_categories.{$tr_type}_cats = record.categories
-                ORDER BY total_amount DESC;";
+                ORDER BY Amount DESC;";
       return fetch($query);
     }
-    //print_r($result);
+    // Fetch total amount based on necessity
+    function totalAmount_necessity() {
+      global $year, $month, $day;
+      $query = "SELECT 
+                (
+                    SELECT SUM(amount)
+                    FROM record
+                    WHERE transaction_type = 'ex'
+                    AND necessity = 0
+                    AND date LIKE '{$year}-{$month}-{$day}'
+                ) AS unneccessary,
+                (
+                    SELECT SUM(amount)
+                    FROM record
+                    WHERE transaction_type = 'ex'
+                    AND necessity = 1
+                    AND date LIKE '{$year}-{$month}-{$day}'
+                ) AS necessary;";
+      //echo $query;
+      return fetch($query, MYSQLI_ASSOC);
+    }
+    // Fetch total amount based on income type
+    function totalAmount_incomeType() {
+      global $year, $month, $day;
+      $query = "SELECT 
+                (
+                    SELECT SUM(amount)
+                    FROM record
+                    WHERE transaction_type = 'in'
+                    AND in_type = 'act'
+                    AND date LIKE '{$year}-{$month}-{$day}'
+                ) AS active,
+                (
+                    SELECT SUM(amount)
+                    FROM record
+                    WHERE transaction_type = 'in'
+                    AND in_type = 'pas'
+                    AND date LIKE '{$year}-{$month}-{$day}'
+                ) AS passive;";
+      return fetch($query, MYSQLI_ASSOC);
+    }
+    function totalAmount_person($person) {
+      if($person !== 'payer'
+          && $person !== 'payee')
+        {return false;}
+      $tr_type = ($person === 'payer' ? 'in' : 'ex');
+      global $year, $month, $day;
+      $query = "SELECT DISTINCT p.{$person} AS person,
+                (
+                    SELECT SUM(amount)
+                    FROM record a
+                    WHERE a.{$person} = p.{$person}
+                    AND transaction_type = '{$tr_type}'
+                    AND date LIKE '{$year}-{$month}-{$day}'
+                ) AS total_amount
+                FROM record p
+                INNER JOIN record a
+                ON p.{$person} = a.{$person}
+                ORDER BY total_amount DESC
+                LIMIT 10;";
+      return fetch($query);
+    }
+    function totalAmount_subcat($transaction_type) {
+      if($transaction_type !== "in"
+          && $transaction_type !== "ex"
+      ) {return false;}
+      $tr_type = $transaction_type;
+      global $year, $month, $day;
+      $query = "SELECT DISTINCT
+                  a.{$tr_type}_subcats AS Sub_category,
+                  b.{$tr_type}_cats AS Category,
+                  (
+                    SELECT SUM(amount)
+                    FROM record
+                    WHERE transaction_type = '{$tr_type}'
+                    AND subcategories = Sub_category
+                    AND date LIKE '{$year}-{$month}-{$day}'
+                  ) AS Amount
+                FROM {$tr_type}_categories a
+                INNER JOIN record rec
+                ON rec.subcategories = a.{$tr_type}_subcats
+                INNER JOIN {$tr_type}_categories b
+                ON b.{$tr_type}_subcats = a.{$tr_type}_subcats
+                ORDER BY Amount DESC;";
+      return fetch($query);
+    } 
   ?>
 </head>
 <body>
+  <form method="POST">
+    <input type="text" name="date" id="date" placeholder="yyyy/mm/dd">
+    <button>Submit</button>
+  </form>
   <p>Date: <?php echo "{$year}-{$month}-{$day}";?></p>
-  <table>
-    <thead>
-      <td>EXPENSE<td>
-    </thead>
-    <tbody>
-      <tr>
-        <td>Category</td>
-        <td>Total amount</td>
-      </tr>
-      <?php
-        $result = totalAmount_category("EXPENSE");
-        $total_amount = 0;
-        for($i = 0; $i < count($result); $i++) {
-          $cat = ucfirst($result[$i]['category']);
-          $amount = number_format($result[$i]['total_amount'], 2);
-          $total_amount += $result[$i]['total_amount'];
-          echo "<tr><td>{$cat}</td><td>{$amount}</td></tr>";
-        }
-      ?>
-      <tr>
-        <td>Total</td>
-        <td><?php echo number_format($total_amount, 2);?></td>
-      </tr>
-    </tbody>
-  </table>
-  <hr>
-  <table>
-    <thead>
-      <td>INCOME<td>
-    </thead>
-    <tbody>
-      <tr>
-        <td>Category</td>
-        <td>Total amount</td>
-      </tr>
-      <?php
-        $result = totalAmount_category("INCOME");
-        $total_amount = 0;
-        for($i = 0; $i < count($result); $i++) {
-          $cat = ucfirst($result[$i]['category']);
-          $amount = number_format($result[$i]['total_amount'], 2);
-          $total_amount += $result[$i]['total_amount'];
-          echo "<tr><td>{$cat}</td><td>{$amount}</td></tr>";
-        }
-      ?>
-      <tr>
-        <td>Total</td>
-        <td><?php echo number_format($total_amount, 2);?></td>
-      </tr>
-    </tbody>
-  </table>
-  <?php mysqli_close($con) ?>
+  <?php 
+    data_table("num", "Expense", ["Category", "Amount"], totalAmount_category("EXPENSE"));
+    data_table("assoc", "Necessity", ["Necessity", "Amount"], totalAmount_necessity());
+    data_table("num", "Subcategory", ["Subcategory", "Category", "Amount"], totalAmount_subcat('ex'));
+    data_table("num", "Payee", ["Category", "Amount"], totalAmount_person('payee'));
+    data_table("num", "Income", ["Category", "Amount"], totalAmount_category("INCOME"));
+    data_table("assoc", "Income type", ["Income type", "Amount"], totalAmount_incomeType());
+    data_table("num", "Subcategory", ["Subcategory", "Category", "Amount"], totalAmount_subcat('in'));
+    //data_table("num", "Payer", ["Category", "Amount"], totalAmount_person('payer'));
+
+    mysqli_close($con);
+  ?>
 </body>
 </html>
