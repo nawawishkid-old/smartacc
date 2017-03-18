@@ -185,16 +185,118 @@
                     FROM record
                     WHERE transaction_type = '{$tr_type}'
                     AND subcategories = Sub_category
+                    AND categories = Category
                     AND date LIKE '{$year}-{$month}-{$day}'
                   ) AS Amount
                 FROM {$tr_type}_categories a
-                INNER JOIN record rec
-                ON rec.subcategories = a.{$tr_type}_subcats
                 INNER JOIN {$tr_type}_categories b
-                ON b.{$tr_type}_subcats = a.{$tr_type}_subcats
+                ON a.{$tr_type}_subcats = b.{$tr_type}_subcats
                 ORDER BY Amount DESC;";
       return fetch($query);
-    } 
+    }
+    // Fetch total amount based on account
+    function totalAmount_account() {
+      global $year, $month, $day;
+      $query = "SELECT DISTINCT
+                  account AS Account,
+                  (
+                    (
+                      (
+                        SELECT  IFNULL(SUM(amount), 0)
+                        FROM    record
+                        WHERE   acc = Account
+                          AND   transaction_type = 'in'
+                          AND   date BETWEEN
+                              (
+                                SELECT MIN(date)
+                                FROM record
+                              ) AND '{$year}-{$month}-{$day}'
+                      )
+                      +
+                      (
+                        SELECT  IFNULL(SUM(amount), 0)
+                        FROM    record
+                        WHERE   to_acc = Account
+                          AND   transaction_type = 'tr'
+                          AND   date BETWEEN
+                              (
+                                SELECT MIN(date)
+                                FROM record
+                              ) AND '{$year}-{$month}-{$day}'
+                      )
+                    )
+                    -
+                    (
+                      (
+                        SELECT  IFNULL(SUM(amount), 0)
+                        FROM    record
+                        WHERE   acc = Account
+                          AND   transaction_type = 'ex'
+                          AND   date BETWEEN
+                              (
+                                    SELECT MIN(date)
+                                    FROM record
+                                ) AND '{$year}-{$month}-{$day}'
+                      )
+                      +
+                      (
+                        SELECT  IFNULL(SUM(amount), 0)
+                        FROM    record
+                        WHERE   from_acc = Account
+                          AND   transaction_type = 'tr'
+                          AND   date BETWEEN
+                              (
+                                SELECT MIN(date)
+                                FROM record
+                              ) AND '{$year}-{$month}-{$day}'
+                      )
+                    )
+                  ) AS Remain
+                FROM account;";
+      return fetch($query);
+    }
+    // Fetch total amount based on sub account
+    function totalAmount_subaccount() {
+      $query = "SELECT DISTINCT
+                  s.sub_account AS Sub_account,
+                  a.account AS Account,
+                  (
+                    (
+                      (
+                        SELECT  IFNULL(SUM(amount), 0)
+                        FROM    record
+                        WHERE   subacc = s.sub_account
+                          AND   transaction_type = 'in'
+                      )
+                      +
+                      (
+                        SELECT  IFNULL(SUM(amount), 0)
+                        FROM    record
+                        WHERE   to_subacc = s.sub_account
+                          AND   transaction_type = 'tr'
+                      )
+                  )
+                  -
+                  (
+                      (
+                        SELECT  IFNULL(SUM(amount), 0)
+                        FROM    record
+                        WHERE   subacc = s.sub_account
+                          AND   transaction_type = 'ex'
+                      )
+                      +
+                      (
+                        SELECT  IFNULL(SUM(amount), 0)
+                        FROM    record
+                        WHERE   from_subacc = s.sub_account
+                          AND   transaction_type = 'tr'
+                      )
+                    )
+                  ) AS Remain
+                FROM account s
+                INNER JOIN account a
+                ON s.account = a.account;";
+    }
   ?>
 </head>
 <body>
@@ -204,11 +306,12 @@
   </form>
   <p>Date: <?php echo "{$year}-{$month}-{$day}";?></p>
   <?php 
-    data_table("num", "Expense", ["Category", "Amount"], totalAmount_category("EXPENSE"));
+    data_table("num", "Account", ["Account", "Remain"], totalAmount_account());
+    data_table("num", "Expense", ["Category", "Amount"], totalAmount_category("ex"));
     data_table("assoc", "Necessity", ["Necessity", "Amount"], totalAmount_necessity());
     data_table("num", "Subcategory", ["Subcategory", "Category", "Amount"], totalAmount_subcat('ex'));
     data_table("num", "Payee", ["Category", "Amount"], totalAmount_person('payee'));
-    data_table("num", "Income", ["Category", "Amount"], totalAmount_category("INCOME"));
+    data_table("num", "Income", ["Category", "Amount"], totalAmount_category("in"));
     data_table("assoc", "Income type", ["Income type", "Amount"], totalAmount_incomeType());
     data_table("num", "Subcategory", ["Subcategory", "Category", "Amount"], totalAmount_subcat('in'));
     //data_table("num", "Payer", ["Category", "Amount"], totalAmount_person('payer'));
