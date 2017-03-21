@@ -53,18 +53,18 @@
 				<section class="sec-1-right" title="Next day">&#10095</section>
 			</section>
 			<section class="today-header-sec-2 today-header-sec">
-				<section class="sec-2-left header-active">Flow</section>
-				<section class="sec-2-center">Budget</section>
-				<section class="sec-2-right">Reports</section>
+				<section class="sec-2-left header-active" data-section-name="flow">Flow</section>
+				<section class="sec-2-center" data-section-name="budget">Budget</section>
+				<section class="sec-2-right" data-section-name="reports">Reports</section>
 			</section>
 		</header>
 		<article class="today-article">
-			<section class="today-article-sec-1 article-active">
+			<section class="today-article-sec-1 article-active" data-section-name="flow">
 			</section>
-			<section class="today-article-sec-2">
+			<section class="today-article-sec-2" data-section-name="budget">
 				BUDGET
 			</section>
-			<section class="today-article-sec-3">
+			<section class="today-article-sec-3" data-section-name="reports">
 				REPORTS
 			</section>
 		</article>
