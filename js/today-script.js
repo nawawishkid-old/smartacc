@@ -6,11 +6,13 @@ window.addEventListener("load", function() {
 	// --- 1.1 DATE ---
 	var dateElem = document.querySelector("input[type=date][name=todayDate]");
 	dateElem.value = date("-");
-	sendDatetoPHP();
+	sendDatetoPHP("flow");
 
 	// --- 1.2 SEND DATE VALUE TO PHP FOR FETCHING CASHFLOW OF THE DAY DATA ---
 	dateElem.addEventListener("input", function() {
-		sendDatetoPHP();
+		sendDatetoPHP("flow");
+		sendDatetoPHP("budget");
+		sendDatetoPHP("reports");
 	});
 
 	// --- 1.3 PREVIOUS AND NEXT DAY TAB ---
@@ -18,11 +20,9 @@ window.addEventListener("load", function() {
 			nextDayTab = document.querySelector(".today-header-sec-1 .sec-1-right");
 	prevDayTab.addEventListener("click", function() {
 		changeDay("prev");
-		sendDatetoPHP();
 	});
 	nextDayTab.addEventListener("click", function() {
 		changeDay("next");
-		sendDatetoPHP();
 	});
 
 	// --- 1.4 TAB ALTERNATION ON CLICK ---
@@ -31,10 +31,10 @@ window.addEventListener("load", function() {
 	for(var i = 0; headerSec2Tab[i]; i++) {
 		headerSec2Tab[i].addEventListener("click", function() {
 			console.log("--- headerSec2Tab.onclick ---");
-			sendDatetoPHP();
+			sendDatetoPHP(this.dataset.sectionName);
 			this.classList.add("header-active");
 			for(var j = 0; headerSec2Tab[j]; j++) {
-				if(headerSec2Tab[j].classList.item(0) != this.classList.item(0)) {
+				if(headerSec2Tab[j].dataset.sectionName != this.dataset.sectionName) {
 					headerSec2Tab[j].classList.remove("header-active");
 					articleSec[j].style.display = "none";
 				} else {
@@ -50,7 +50,7 @@ window.addEventListener("load", function() {
 		if(typeof punctuation !== "string") {
 			return false;
 		}
-		var date = new Date(),
+		let date = new Date(),
 			  year = date.getFullYear(),
 			  month = date.getMonth() + 1,
 			  day = date.getDate();
@@ -69,23 +69,38 @@ window.addEventListener("load", function() {
 		return x;
 	}
 	//---
-	function sendDatetoPHP() {
-		console.log("--- sendDatetoPHP() ---");
-		var dateElem = document.querySelector("input[type=date][name=todayDate]");
-		var fd = new FormData();
-		fd.append(dateElem.name, dateElem.value);
-		for(var pair of fd.entries()) {
-			console.log("Key = " + pair[0] + ", value = " + pair[1]);
+	function sendDatetoPHP(sectionName) {
+		console.log("--- sendDatetoPHP(sectionName) ---");
+		let sn = sectionName;
+		if(typeof sn !== 'string'
+				&& (sn !== "flow"
+						&& sn !== "budget"
+						&& sn !== "reports"
+					)
+			) {return false;}
+		let phpUrl;
+		if(sn === "flow") {
+			phpUrl = "php/today-php-transact.php";
+		} else if(sn === "budget") {
+			phpUrl = ""; // Undefined yet.
+			return false;
+		} else {
+			phpUrl = "php/today-php-reports.php";
 		}
-		var xhr = new XMLHttpRequest();
-		xhr.open("POST", "php/today-php-transact.php");
+		console.log("phpUrl = " + phpUrl);
+		let dateElem = document.querySelector("input[type=date][name=todayDate]");
+		let fd = new FormData();
+		fd.append(dateElem.name, dateElem.value);
+		let xhr = new XMLHttpRequest();
+		xhr.open("POST", phpUrl);
 		xhr.send(fd);
-		xhr.addEventListener("load", function() {
+		xhr.onload = function() {
 			console.log("--- xhr.onload ---");
-			var flowSec = document.querySelectorAll(".today-article > section")[0];
-			flowSec.innerHTML = xhr.responseText;
+			let	sec = document.querySelector(".today-article > section[data-section-name="
+				+ sn + "]");
+			sec.innerHTML = this.responseText;
 			setTransactItemEvent();
-		});
+		}
 	}
 	//---
 	function changeDay(param) {
@@ -93,19 +108,21 @@ window.addEventListener("load", function() {
 		if(typeof param !== "string") {
 			return false;
 		}
-		var dateElem = document.querySelector("input[type=date][name=todayDate]"),
+		let dateElem = document.querySelector("input[type=date][name=todayDate]"),
 				dMS = Date.parse(dateElem.value),
-				oneDay = 84000000;
+				oneDay = 84000000,
+				d;
 		if(param === "next") {
-			var	nextMS = dMS + oneDay,
-					d = new Date(nextMS).toLocaleDateString();
+			d = new Date(dMS + oneDay).toLocaleDateString();
 		} else if(param === "prev") {
-			var	prevMS = dMS - oneDay,
-			 		d = new Date(prevMS).toLocaleDateString();
+			d = new Date(dMS - oneDay).toLocaleDateString();
 		}
-		var dSplit = d.split("/"),
+		let dSplit = d.split("/"),
 				day = dSplit[2] + "-" + addZero(dSplit[0]) + "-" + addZero(dSplit[1]);
 		dateElem.value = day;
+		sendDatetoPHP("flow");
+		sendDatetoPHP("budget");
+		sendDatetoPHP("reports");
 	}
 
 
@@ -133,7 +150,7 @@ window.addEventListener("load", function() {
 
 	// --- 2.1.2 TRANSACTION ITEM MENU ---
 
-	// --- 2.  FUNCTION ---
+	// --- 2.1.FUNCTION ---
 	function setTransactItemEvent() {
 		console.log("--- setTransactItemEvent() ---");
 		var transactItems = document.querySelectorAll(".today-flow-item-label");
@@ -213,4 +230,6 @@ window.addEventListener("load", function() {
 		}
 	}
 
+	// --- 2.3 REPORT SECTION (sec-3) ---
+	//
 });
