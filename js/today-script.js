@@ -6,7 +6,10 @@ window.addEventListener("load", function() {
 	// --- 1.1 DATE ---
 	var dateElem = document.querySelector("input[type=date][name=todayDate]");
 	dateElem.value = date("-");
+	// Initial
 	sendDatetoPHP("flow");
+	sendDatetoPHP("budget");
+	sendDatetoPHP("reports");
 
 	// --- 1.2 SEND DATE VALUE TO PHP FOR FETCHING CASHFLOW OF THE DAY DATA ---
 	dateElem.addEventListener("input", function() {
@@ -96,10 +99,23 @@ window.addEventListener("load", function() {
 		xhr.send(fd);
 		xhr.onload = function() {
 			console.log("--- xhr.onload ---");
+			console.log(this.responseText);
 			let	sec = document.querySelector(".today-article > section[data-section-name="
 				+ sn + "]");
-			sec.innerHTML = this.responseText;
-			setTransactItemEvent();
+			if(sn === "flow") {
+				sec.innerHTML = this.responseText;
+				setTransactItemEvent();
+			} else if(sn === "budget") {
+
+			} else {
+				let json = JSON.parse(this.responseText),
+						acc = json["acc"],
+						gen = json["gen"],
+						accSec = sec.querySelector(".today-reports-hidden-detail.reports-account"),
+						genSec = sec.querySelector(".today-reports-hidden-detail.reports-general");
+				accSec.innerHTML = acc;
+				genSec.innerHTML = gen;
+			}
 		}
 	}
 	//---
