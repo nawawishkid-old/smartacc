@@ -65,7 +65,27 @@
 				BUDGET
 			</section>
 			<section class="today-article-sec-3" data-section-name="reports">
-				REPORTS
+				<div class="today-reports-sec reports-account">
+					<span>Account</span>
+					<div class="open-icon"></div>
+				</div>
+				<div class="today-reports-hidden-detail reports-account">
+					<div class="preloader"></div>
+				</div>
+				<div class="today-reports-sec reports-general">
+					<span>General</span>
+					<div class="open-icon"></div>
+				</div>
+				<div class="today-reports-hidden-detail reports-general">
+					<div class="preloader"></div>
+				</div>
+				<div class="today-reports-sec reports-deep">
+					<span>Deep</span>
+					<div class="open-icon"></div>
+				</div>
+				<div class="today-reports-hidden-detail reports-deep">
+					<div class="preloader"></div>
+				</div>
 			</section>
 		</article>
 	</main>
