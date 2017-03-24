@@ -5,7 +5,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Edit Transaction | SMARTACC</title>
 	<link rel="stylesheet" type="text/css" href="css/index-style.css">
-	<link rel="stylesheet" type="text/css" href="css/today-edit-style.css">
+	<link rel="stylesheet" type="text/css" href="css/new-and-edit-style.css">
 </head>
 <body>
 	<?php
@@ -90,13 +90,13 @@
 	?>
 	<header class="index-header col-12 col-m-12">
     <section class="header-left">
-    	<img class="icon" src="/media/smartacc/icon-back@48px-fff-min.png" title="Back" alt="Back icon"/>
+    	<img class="icon" src="media/icon-back@48px-fff-min.png" title="Back" alt="Back icon"/>
     </section>
     <section class="header-center">
       <a href="index.php"><h1>Smartacc</h1></a>
     </section>
     <section class="header-right">
-    	<img class="icon" src="/media/smartacc/icon-dotted-menu@48px-404040-min.png" title="More" alt="More icon"/>
+    	<!--section>img class="icon" src="/media/smartacc/icon-dotted-menu@48px-404040-min.png" title="More" alt="More icon"/-->
     </section>
 	</header>
 	<main style="width: 100%; height: 80%; overflow: auto;">
@@ -354,6 +354,6 @@
 	  </section>
 	</footer>
 	<?php mysqli_close($con); ?>
-	<script src="js/today-edit-script.js"></script>
+	<script src="js/new-and-edit-script.js"></script>
 </body>
 </html>

@@ -5,7 +5,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>New record | SMARTACC</title>
 	<link rel="stylesheet" type="text/css" href="css/index-style.css">
-	<link rel="stylesheet" type="text/css" href="css/new-record-style.css">
+	<link rel="stylesheet" type="text/css" href="css/new-and-edit-style.css">
 </head>
 <body>
 	<?php
@@ -31,60 +31,10 @@
 				}
 			}
 		}
-		/*
-		fetch_data($con, "in");
-		fetch_data($con, "ex");
-		fetch_data($con, "acc");
-
-		// Fetch categories or account option from database
-		function fetch_data($con, $input_type) {
-
-			echo "<script>\nvar {$input_type}OptArray = [];\n";
-
-  		switch($input_type) {
-  			case "in":
-  				$str = "SELECT in_cats, in_subcats FROM in_categories;";
-  				//$str2 = ""
-  				break;
-  			case "ex":
-  				$str = "SELECT ex_cats, ex_subcats FROM ex_categories;";
-  				break;
-  			case "acc":
-  				$str = "SELECT account, sub_account FROM account;";
-  		}
-
-  		$query = mysqli_query($con, $str);
-  		$result = mysqli_fetch_all($query, MYSQLI_NUM);
-
-  		//print_r($result);
-
-  		$i = 0;
-
-			while(@$result[$i]) {
-				$x = $result[$i][0];
-
-				// Push this data immediately without creating new array, if this subcat name is the same as previous subcat name
-				if($i > 0 && $x == $result[$i - 1][0]) {
-					echo "sub{$x}.push('{$result[$i][1]}');\n";
-				} else {
-					// Create subcat array with data in it and push this subcat array into created main array.
-					// sub{$x} array always have 2 index.
-					// First is used to store the name of subcat in index 0,
-					// second always contain its data in array object in index 1.
-					echo "sub{$x} = [];\nsub{$x}.push('{$result[$i][1]}');\nvar {$x} = ['{$x}', sub{$x}];\n{$input_type}OptArray.push({$x});\n";
-				}
-				
-				$i++;
-			}
-
-			echo "console.log({$input_type}OptArray);\n</script>";
-		}
-
-		mysqli_close($con);*/
 	?>
 	<header class="index-header col-12 col-m-12">
     <section class="header-left">
-    	<img class="icon" src="/media/smartacc/icon-back@48px-fff-min.png" title="Back" alt="Back icon"/>
+    	<img class="icon" src="media/icon-back@48px-fff-min.png" title="Back" alt="Back icon"/>
     </section>
     <section class="header-center">
       <a href="index.php"><h1>Smartacc</h1></a>
@@ -306,6 +256,6 @@
 	  </section>
 	</footer>
 
-	<script src="js/new-record-script.js"></script>
+	<script src="js/new-and-edit-script.js"></script>
 </body>
 </html>
