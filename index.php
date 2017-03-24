@@ -10,7 +10,7 @@
 <body>
 	<header class="index-header col-12 col-m-12">
     <section class="header-left">
-     	<img class='icon' src="/media/smartacc/icon-menu@48px-min.png" alt="Menu icon"/>
+     	<img class='icon' src="media/icon-menu@48px-min.png" alt="Menu icon"/>
     </section>
     <section class="header-center">
       <a href="index.php"><h1>Smartacc</h1></a>
@@ -65,21 +65,21 @@
 				BUDGET
 			</section>
 			<section class="today-article-sec-3" data-section-name="reports">
-				<div class="today-reports-sec reports-account">
+				<div class="today-reports-sec reports-account reports-active">
 					<span>Account</span>
 					<div class="open-icon"></div>
 				</div>
 				<div class="today-reports-hidden-detail reports-account">
 					<div class="preloader"></div>
 				</div>
-				<div class="today-reports-sec reports-general">
+				<div class="today-reports-sec reports-general reports-active">
 					<span>General</span>
 					<div class="open-icon"></div>
 				</div>
 				<div class="today-reports-hidden-detail reports-general">
 					<div class="preloader"></div>
 				</div>
-				<div class="today-reports-sec reports-deep">
+				<div class="today-reports-sec reports-deep reports-active">
 					<span>Deep</span>
 					<div class="open-icon"></div>
 				</div>
