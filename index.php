@@ -10,13 +10,15 @@
 <body>
 	<header class="index-header col-12 col-m-12">
     <section class="header-left">
-     	<img class='icon' src="media/icon-menu@48px-min.png" alt="Menu icon"/>
+     	<img class='icon' src="media/icon-menu@48px-fff.png" alt="Menu icon"/>
     </section>
     <section class="header-center">
       <a href="index.php"><h1>Smartacc</h1></a>
     </section>
     <section class="header-right">
-      <a href="new-record.php"><h1 title="New record">&#10133</h1></a>
+      <a href="new-record.php">
+      	<img class="icon" width="30px" src="media/icon-add@48px-fff.png" alt="Add icon"/>
+      </a>
     </section>
 	</header>
   <aside class="sidebar sidebar-maxwidth sidebar-minwidth">
@@ -37,6 +39,7 @@
 	      <li>Setting</li>
 	      <li>About</li>
 	      <li>Help</li>
+	      <a href="icon-attr.html"><li>Icon attribution</li></a>
 	      <output></output>
 	    </ul>
 	   </nav>
@@ -45,12 +48,12 @@
 	<main style="width:100%;height:80%;">
 		<header class="today-header">
 			<section class="today-header-sec-1 today-header-sec">
-				<section class="sec-1-left" title="Previous day">&#10094</section>
+				<section class="sec-1-left" title="Previous day"></section>
 				<section class="sec-1-center">
 					<input type="date" name="todayDate" id="todayDate"/>
 					<!--label for="todayDate"></label-->
 				</section>
-				<section class="sec-1-right" title="Next day">&#10095</section>
+				<section class="sec-1-right" title="Next day"></section>
 			</section>
 			<section class="today-header-sec-2 today-header-sec">
 				<section class="sec-2-left header-active" data-section-name="flow">Flow</section>

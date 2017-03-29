@@ -90,7 +90,9 @@
 	?>
 	<header class="index-header col-12 col-m-12">
     <section class="header-left">
-    	<img class="icon" src="media/icon-back@48px-fff-min.png" title="Back" alt="Back icon"/>
+    	<a href="index.php" title="back">
+    		<img class="icon" src="media/icon-prev@48px-fff.png" title="Back" alt="Back icon"/>
+    	</a>
     </section>
     <section class="header-center">
       <a href="index.php"><h1>Smartacc</h1></a>
