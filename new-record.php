@@ -249,7 +249,7 @@
 		  </div>
 		</div>
 	</main>
-	<footer style="width: 100%; height: 10%;">
+	<footer style="width: 100%; height: 10%; min-height: 3em;">
 		<section class="submit-sec">
 	  	<button id="originalSubmitBtn" form="formRecord" title="You'll be able to update only when you complete all inputs." disabled>Update</button>
 	  </section>

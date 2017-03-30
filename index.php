@@ -45,7 +45,7 @@
 	   </nav>
   </aside>
   <div class="sidebar-background"></div>
-	<main style="width:100%;height:80%;">
+	<main style="width:100%; height:80%; overflow: hidden;">
 		<header class="today-header">
 			<section class="today-header-sec-1 today-header-sec">
 				<section class="sec-1-left" title="Previous day"></section>
@@ -68,7 +68,34 @@
 				BUDGET
 			</section>
 			<section class="today-article-sec-3" data-section-name="reports">
-				<div class="today-reports-sec reports-account reports-active">
+				<div class="report-account">ACCOUNT
+				</div>
+				<div class="report-general">
+					<div class="tab">
+						<div id="exTab" class="tab-sec" title="Expense report">
+							<span>Expense</span>
+						</div>
+						<div id="inTab" class="tab-sec" title="Income report">
+							<span>Income</span>
+						</div>
+					</div>
+					<div class="output">
+						<div id="exOutput" class="output-sec">
+							<header>
+								<p>Total amount: ###</p>
+								<p>Transaction(s): ###</p>
+							</header>
+							<article>
+								<div class="report-sheet"></div>
+								<div class="report-sheet"></div>
+								<div class="report-sheet"></div>
+								<div class="report-sheet"></div>
+							</article>
+						</div>
+						<div id="inOutput" class="output-sec"></div>
+					</div>
+				</div>
+				<!--div class="today-reports-sec reports-account reports-active">
 					<span>Account</span>
 					<div class="open-icon"></div>
 				</div>
@@ -88,12 +115,12 @@
 				</div>
 				<div class="today-reports-hidden-detail reports-deep">
 					<div class="preloader"></div>
-				</div>
+				</div-->
 			</section>
 		</article>
 	</main>
 	<a href="new-record.php">
-		<footer style="width: 100%;height: 10%;">New record</footer>
+		<footer style="width: 100%;height: 10%; min-height: 3em;">New record</footer>
 	</a>
 	<script src="js/index-script.js"></script>
 	<script src="js/today-script.js"></script>
