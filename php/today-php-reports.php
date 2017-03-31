@@ -79,8 +79,9 @@
         }
       }
     } else {return false;}
-    $table .= "<tr><td>Total</td><td>" . number_format($total_amount, 2) . "</td></tr>";
-    $table .= "</tbody></table><hr>";
+    $table .= "<tr><td>Total</td><td colspan='" . (count($colhead) - 1)
+            . "'>" . number_format($total_amount, 2) . "</td></tr>";
+    $table .= "</tbody></table>";
     return $table;
   }
 
@@ -293,6 +294,27 @@
               FROM account s
               INNER JOIN account a
               ON s.account = a.account;";
+    return fetch($query);
+  }
+  // Get number of transactions of the day
+  function transact_num() {
+    global $date;
+    $query = "SELECT DISTINCT
+                (
+                  SELECT COUNT(*)
+                  FROM record
+                  WHERE transaction_type = 'in'
+                  AND date = '{$date}'
+                ) AS income,
+                (
+                  SELECT COUNT(*)
+                  FROM record
+                  WHERE transaction_type = 'ex'
+                  AND date = '{$date}'
+                ) AS expense
+              FROM record
+              WHERE date = '{$date}';";
+    return fetch($query);
   }
 
 
@@ -303,7 +325,8 @@
   //
   //
 
-  $acc = data_table("num", "Account", ["Account", "Remain"], totalAmount_account());
+  /*$acc = data_table("num", "Account", ["Account", "Remain"], totalAmount_account())
+  . data_table("num", "Subaccount", ["Subaccount", "Account", "Remain"], totalAmount_subaccount());
   $gen = data_table("num", "Expense", ["Category", "Amount"], totalAmount_category("ex"))
   . data_table("assoc", "Necessity", ["Necessity", "Amount"], totalAmount_necessity())
   . data_table("num", "Subcategory", ["Subcategory", "Category", "Amount"], totalAmount_subcat('ex'))
@@ -311,11 +334,43 @@
   . data_table("num", "Income", ["Category", "Amount"], totalAmount_category("in"))
   . data_table("assoc", "Income type", ["Income type", "Amount"], totalAmount_incomeType())
   . data_table("num", "Subcategory", ["Subcategory", "Category", "Amount"], totalAmount_subcat('in'));
+  */
   //. data_table("num", "Payer", ["Category", "Amount"], totalAmount_person('payer'));
 
-  $json = array("acc" => $acc, "gen" => $gen);
+  // Manage transact_num()
+  $tnum = transact_num();
+  if(!empty($tnum)) {
+    $tran_in = $tnum[0][0];
+    $tran_ex = $tnum[0][1];
+  } else {
+    $tran_in = 0;
+    $tran_ex = 0;
+  }
+  //print_r(transact_num());
+  /*$deep = " <p>{$tran_in} income transaction(s)"
+    . "<br>{$tran_ex} expense transaction(s)"
+    . "<br>Total " . ($tran_ex + $tran_in) . " transaction(s).</p>";
 
-  echo json_encode($json);
+  $json = array("acc" => $acc, "gen" => $gen, "deep" => $deep);
+  */
+
+  // --- TEST DATA SHEET ---
+  $_acc = data_table("num", "Account", ["Account", "Remain"], totalAmount_account())
+  . data_table("num", "Subaccount", ["Subaccount", "Account", "Remain"], totalAmount_subaccount());
+  $_necessity = data_table("assoc", "Necessity", ["Necessity", "Amount"], totalAmount_necessity());
+  $_excat = data_table("num", "Expense", ["Category", "Amount"], totalAmount_category("ex"));
+  $_exsubcat = data_table("num", "Subcategory", ["Subcategory", "Category", "Amount"], totalAmount_subcat('ex'));
+  $_payee = data_table("num", "Payee", ["Category", "Amount"], totalAmount_person('payee'));
+  /*$jsonObj = {
+    'necessity': $_necessity,
+    'excat': $_excat,
+    'exsubcat': $_exsubcat,
+    'payee': $_payee
+  };
+  */
+  $jsonArrNum = [$_acc, [$_necessity, $_excat, $_exsubcat, $_payee]];
+
+  echo json_encode($jsonArrNum);
 
   mysqli_close($con);
 ?>
