@@ -12,7 +12,7 @@ window.addEventListener("load", function() {
 	sendDatetoPHP("reports");
 
 	// --- 1.2 SEND DATE VALUE TO PHP FOR FETCHING CASHFLOW OF THE DAY DATA ---
-	dateElem.addEventListener("input", function() {
+	dateElem.addEventListener("change", function() {
 		sendDatetoPHP("flow");
 		sendDatetoPHP("budget");
 		sendDatetoPHP("reports");
@@ -34,7 +34,6 @@ window.addEventListener("load", function() {
 	for(var i = 0; headerSec2Tab[i]; i++) {
 		headerSec2Tab[i].addEventListener("click", function() {
 			console.log("--- headerSec2Tab.onclick ---");
-			sendDatetoPHP(this.dataset.sectionName);
 			this.classList.add("header-active");
 			for(var j = 0; headerSec2Tab[j]; j++) {
 				if(headerSec2Tab[j].dataset.sectionName != this.dataset.sectionName) {
@@ -42,6 +41,13 @@ window.addEventListener("load", function() {
 					articleSec[j].style.display = "none";
 				} else {
 					articleSec[j].style.display = "block";
+					// Show hidden detail of reports.
+					if(articleSec[j].dataset.sectionName === "reports") {
+						let reportsSec = document.querySelectorAll(".today-reports-hidden-detail");
+						for(let i = 0; reportsSec[i]; i++) {
+							reportsSec[i].style.maxHeight = reportsSec[i].scrollHeight + "px";
+						}
+					}
 				}
 			}
 		});
@@ -81,42 +87,80 @@ window.addEventListener("load", function() {
 						&& sn !== "reports"
 					)
 			) {return false;}
-		let phpUrl;
+		let url;
 		if(sn === "flow") {
-			phpUrl = "php/today-php-transact.php";
+			url = "php/today-php-transact.php";
+			let showArea = document.querySelector(".today-article-sec-1"),
+					preloader = document.createElement("div");
+			preloader.classList.add("preloader");
+			showArea.innerHTML = "";
+			showArea.appendChild(preloader);
 		} else if(sn === "budget") {
-			phpUrl = ""; // Undefined yet.
+			url = ""; // Undefined yet.
 			return false;
 		} else {
-			phpUrl = "php/today-php-reports.php";
+			url = "php/today-php-reports.php";
+			let hiddenDetail = document.querySelectorAll(".today-reports-hidden-detail");
+			for(let i = 0; hiddenDetail[i]; i++) {
+				let preloader = document.createElement("div");
+				preloader.classList.add("preloader");
+				hiddenDetail[i].innerHTML = "";
+				hiddenDetail[i].appendChild(preloader);
+			}
 		}
-		console.log("phpUrl = " + phpUrl);
+		console.log("url = " + url);
 		let dateElem = document.querySelector("input[type=date][name=todayDate]");
 		let fd = new FormData();
 		fd.append(dateElem.name, dateElem.value);
 		let xhr = new XMLHttpRequest();
-		xhr.open("POST", phpUrl);
-		xhr.send(fd);
-		xhr.onload = function() {
-			console.log("--- xhr.onload ---");
-			console.log(this.responseText);
-			let	sec = document.querySelector(".today-article > section[data-section-name="
-				+ sn + "]");
-			if(sn === "flow") {
-				sec.innerHTML = this.responseText;
-				setTransactItemEvent();
-			} else if(sn === "budget") {
+		xhr.open("POST", url);
+		xhr.onreadystatechange = function() { 
+			if(this.readyState === 2) {
+				console.log("--- xhr.readyState = 2 ---");
+				if(sn === "flow") {
 
-			} else {
-				let json = JSON.parse(this.responseText),
-						acc = json["acc"],
-						gen = json["gen"],
-						accSec = sec.querySelector(".today-reports-hidden-detail.reports-account"),
-						genSec = sec.querySelector(".today-reports-hidden-detail.reports-general");
-				accSec.innerHTML = acc;
-				genSec.innerHTML = gen;
+				} else if (sn === "budget") {
+
+				} else {
+				}
+			} else if(this.readyState === 4) {
+				console.log("--- xhr.onload ---");
+				console.log(this.responseText);
+				let	sec = document.querySelector(".today-article > section[data-section-name="
+					+ sn + "]");
+				if(sn === "flow") {
+					sec.innerHTML = this.responseText;
+					setTransactItemEvent();
+				} else if(sn === "budget") {
+
+				} else {
+					let json = JSON.parse(this.responseText),
+							accSec = sec.querySelector(".today-reports-hidden-detail.reports-account"),
+							sheets = document.querySelectorAll("#exOutput .report-sheet"),
+							i = 0;
+					accSec.innerHTML = json[0];
+					accSec.style.maxHeight = accSec.scrollHeight + "px";
+					for(i; sheets[i]; i++) {
+						sheets[i].innerHTML = json[1][i];
+					}
+					/*let json = JSON.parse(this.responseText),
+							acc = json["acc"],
+							gen = json["gen"],
+							deep = json["deep"],
+							accSec = sec.querySelector(".today-reports-hidden-detail.reports-account"),
+							genSec = sec.querySelector(".today-reports-hidden-detail.reports-general"),
+							deepSec = sec.querySelector(".today-reports-hidden-detail.reports-deep");
+					accSec.innerHTML = acc;
+					accSec.style.maxHeight = accSec.scrollHeight + "px";
+					genSec.innerHTML = gen;
+					genSec.style.maxHeight = genSec.scrollHeight + "px";
+					deepSec.innerHTML = deep;
+					deepSec.style.maxHeight = deepSec.scrollHeight + "px";
+					*/
+				}
 			}
 		}
+		xhr.send(fd);
 	}
 	//---
 	function changeDay(param) {
@@ -247,5 +291,27 @@ window.addEventListener("load", function() {
 	}
 
 	// --- 2.3 REPORT SECTION (sec-3) ---
-	//
+	// --- 2.3.1 OPEN & CLOSE REPORTS PANEL ---
+	var reportsSec = document.querySelectorAll(".today-reports-sec");
+	for(let i = 0; reportsSec[i]; i++) {
+		reportsSec[i].addEventListener("click", function() {
+			console.log("--- reportsSec[i].onclick() ---");
+			// Unclickable until successfully fetched data.
+			if(this.nextElementSibling.children.length <= 1) {
+				return false;
+			}
+			let hiddenDetail = this.nextElementSibling,
+					mh = hiddenDetail.style.maxHeight;
+			if(mh == "0px"
+					&& !this.classList.contains("reports-active")) {
+				hiddenDetail.style.maxHeight = hiddenDetail.scrollHeight + "px";
+			} else if(mh != "0px"
+					&& this.classList.contains("reports-active")) {
+				hiddenDetail.style.maxHeight = 0;
+			}
+			this.classList.toggle("reports-active");
+		});
+	}
+	// --- 2.3.2 INCOME/EXPENSE REPORT TAB SELECTION ---
+
 });
