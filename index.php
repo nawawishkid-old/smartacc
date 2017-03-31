@@ -68,7 +68,18 @@
 				BUDGET
 			</section>
 			<section class="today-article-sec-3" data-section-name="reports">
-				<div class="report-account">ACCOUNT
+				<!--div class="report-account">ACCOUNT
+				</div-->
+				<div class="today-reports-sec reports-account reports-active">
+					<span>Account</span>
+					<div class="open-icon"></div>
+				</div>
+				<div class="today-reports-hidden-detail reports-account">
+					<div class="preloader"></div>
+				</div>
+				<div class="today-reports-sec reports-general reports-active">
+					<span>General</span>
+					<div class="open-icon"></div>
 				</div>
 				<div class="report-general">
 					<div class="tab">
@@ -82,14 +93,26 @@
 					<div class="output">
 						<div id="exOutput" class="output-sec">
 							<header>
-								<p>Total amount: ###</p>
-								<p>Transaction(s): ###</p>
+								<span>Total amount: ###</span><br>
+								<span>Transaction(s): ###</span>
 							</header>
 							<article>
-								<div class="report-sheet"></div>
-								<div class="report-sheet"></div>
-								<div class="report-sheet"></div>
-								<div class="report-sheet"></div>
+								<div class="report-folder">
+									<div class="report-tab-wrapper">
+										<div class="report-tab tab-necessity _tab-active">Necessity</div>
+										<div class="report-tab tab-category">Category</div>
+										<div class="report-tab tab-subcategory">Subcategory</div>
+										<div class="report-tab tab-payee">Payee</div>
+									</div>
+									<div class="report-sheet-wrapper">
+										<div class="report-sheet sheet-necessity _sheet-active">
+											<div class="preloader"></div>
+										</div>
+										<div class="report-sheet sheet-category"></div>
+										<div class="report-sheet sheet-subcategory"></div>
+										<div class="report-sheet sheet-payee"></div>
+									</div>
+								</div>
 							</article>
 						</div>
 						<div id="inOutput" class="output-sec"></div>
