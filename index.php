@@ -56,13 +56,13 @@
 				<section class="sec-1-right" title="Next day"></section>
 			</section>
 			<section class="today-header-sec-2 today-header-sec">
-				<section class="sec-2-left header-active" data-section-name="flow">Flow</section>
+				<section class="sec-2-left _header-active" data-section-name="flow">Flow</section>
 				<section class="sec-2-center" data-section-name="budget">Budget</section>
 				<section class="sec-2-right" data-section-name="reports">Reports</section>
 			</section>
 		</header>
 		<article class="today-article">
-			<section class="today-article-sec-1 article-active" data-section-name="flow">
+			<section class="today-article-sec-1 _article-active" data-section-name="flow">
 			</section>
 			<section class="today-article-sec-2" data-section-name="budget">
 				BUDGET
@@ -70,28 +70,28 @@
 			<section class="today-article-sec-3" data-section-name="reports">
 				<!--div class="report-account">ACCOUNT
 				</div-->
-				<div class="today-reports-sec reports-account reports-active">
+				<div class="today-reports-sec report-account">
 					<span>Account</span>
 					<div class="open-icon"></div>
 				</div>
-				<div class="today-reports-hidden-detail reports-account">
+				<div class="today-reports-hidden-detail report-account">
 					<div class="preloader"></div>
 				</div>
-				<div class="today-reports-sec reports-general reports-active">
+				<!--div class="today-reports-sec reports-general reports-active">
 					<span>General</span>
 					<div class="open-icon"></div>
-				</div>
-				<div class="report-general">
-					<div class="tab">
-						<div id="exTab" class="tab-sec" title="Expense report">
-							<span>Expense</span>
+				</div-->
+				<!--div class="report-general"-->
+					<div class="today-reports-sec report-general">
+						<div id="exTab" class="report-general-tab _gentab-active" title="Expense report">
+							Expense
 						</div>
-						<div id="inTab" class="tab-sec" title="Income report">
-							<span>Income</span>
+						<div id="inTab" class="report-general-tab" title="Income report">
+							Income
 						</div>
 					</div>
-					<div class="output">
-						<div id="exOutput" class="output-sec">
+					<div class="report-general-output">
+						<div class="output-sec output-ex _output-active">
 							<header>
 								<span>Total amount: ###</span><br>
 								<span>Transaction(s): ###</span>
@@ -99,7 +99,7 @@
 							<article>
 								<div class="report-folder">
 									<div class="report-tab-wrapper">
-										<div class="report-tab tab-necessity _tab-active">Necessity</div>
+										<div class="report-tab tab-necessity _sheettab-active">Necessity</div>
 										<div class="report-tab tab-category">Category</div>
 										<div class="report-tab tab-subcategory">Subcategory</div>
 										<div class="report-tab tab-payee">Payee</div>
@@ -115,9 +115,9 @@
 								</div>
 							</article>
 						</div>
-						<div id="inOutput" class="output-sec"></div>
+						<div class="output-sec output-in"></div>
 					</div>
-				</div>
+				<!--/div-->
 				<!--div class="today-reports-sec reports-account reports-active">
 					<span>Account</span>
 					<div class="open-icon"></div>
