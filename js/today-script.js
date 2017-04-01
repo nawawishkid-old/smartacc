@@ -31,27 +31,16 @@ window.addEventListener("load", function() {
 	// --- 1.4 TAB ALTERNATION ON CLICK ---
 	var headerSec2Tab = document.querySelectorAll(".today-header-sec-2 > section"),
 			articleSec = document.querySelectorAll(".today-article > section");
-	for(var i = 0; headerSec2Tab[i]; i++) {
-		headerSec2Tab[i].addEventListener("click", function() {
-			console.log("--- headerSec2Tab.onclick ---");
-			this.classList.add("header-active");
-			for(var j = 0; headerSec2Tab[j]; j++) {
-				if(headerSec2Tab[j].dataset.sectionName != this.dataset.sectionName) {
-					headerSec2Tab[j].classList.remove("header-active");
-					articleSec[j].style.display = "none";
-				} else {
-					articleSec[j].style.display = "block";
-					// Show hidden detail of reports.
-					if(articleSec[j].dataset.sectionName === "reports") {
-						let reportsSec = document.querySelectorAll(".today-reports-hidden-detail");
-						for(let i = 0; reportsSec[i]; i++) {
-							reportsSec[i].style.maxHeight = reportsSec[i].scrollHeight + "px";
-						}
-					}
-				}
-			}
-		});
-	}
+	tabAndOutputDisplay(headerSec2Tab, articleSec, "click", "_header-active", "_article-active");
+	// show account report when user select report tab
+	var selectReportCount = 0;
+	headerSec2Tab[2].addEventListener("click", function() {
+		selectReportCount++;
+		if(selectReportCount > 1) {return false;}
+		let accHidden = document.querySelector(".today-reports-hidden-detail");
+		accHidden.style.maxHeight = accHidden.scrollHeight + "px";
+		accHidden.previousElementSibling.classList.add("_report-active");
+	});
 
 	// --- 1.5 FUNCTION ---
 	function date(punctuation) {
@@ -125,7 +114,7 @@ window.addEventListener("load", function() {
 				}
 			} else if(this.readyState === 4) {
 				console.log("--- xhr.onload ---");
-				console.log(this.responseText);
+				//console.log(this.responseText);
 				let	sec = document.querySelector(".today-article > section[data-section-name="
 					+ sn + "]");
 				if(sn === "flow") {
@@ -135,28 +124,15 @@ window.addEventListener("load", function() {
 
 				} else {
 					let json = JSON.parse(this.responseText),
-							accSec = sec.querySelector(".today-reports-hidden-detail.reports-account"),
-							sheets = document.querySelectorAll("#exOutput .report-sheet"),
+							accHidden = sec.querySelector(".today-reports-hidden-detail"),
+							sheets = document.querySelectorAll(".output-ex .report-sheet"),
 							i = 0;
-					accSec.innerHTML = json[0];
-					accSec.style.maxHeight = accSec.scrollHeight + "px";
+					accHidden.innerHTML = json[0];
+					accHidden.style.maxHeight = accHidden.scrollHeight + "px";
+					accHidden.previousElementSibling.classList.add("_report-active");
 					for(i; sheets[i]; i++) {
 						sheets[i].innerHTML = json[1][i];
 					}
-					/*let json = JSON.parse(this.responseText),
-							acc = json["acc"],
-							gen = json["gen"],
-							deep = json["deep"],
-							accSec = sec.querySelector(".today-reports-hidden-detail.reports-account"),
-							genSec = sec.querySelector(".today-reports-hidden-detail.reports-general"),
-							deepSec = sec.querySelector(".today-reports-hidden-detail.reports-deep");
-					accSec.innerHTML = acc;
-					accSec.style.maxHeight = accSec.scrollHeight + "px";
-					genSec.innerHTML = gen;
-					genSec.style.maxHeight = genSec.scrollHeight + "px";
-					deepSec.innerHTML = deep;
-					deepSec.style.maxHeight = deepSec.scrollHeight + "px";
-					*/
 				}
 			}
 		}
@@ -197,7 +173,7 @@ window.addEventListener("load", function() {
 		if(menuActive.length === 0) {
 			return null;
 		}
-		for(var i = 0; menuActive[i]; i++) {
+		for(let i = 0; menuActive[i]; i++) {
 			var menuTab = menuActive[i].previousElementSibling;
 			if(e != menuActive[i] && e != menuTab && e.parentElement != menuActive[i]) {
 				menuActive[i].style.maxWidth = null;
@@ -217,7 +193,7 @@ window.addEventListener("load", function() {
 		var transactMenu = document.querySelectorAll(".today-flow-item-sec-right");
 		var transactDeleteTab = document.querySelectorAll(".hidden-menu-sec-1");
 		var transactEditTab = document.querySelectorAll(".hidden-menu-sec-2");
-		for(var i = 0; transactItems[i]; i++) {
+		for(let i = 0; transactItems[i]; i++) {
 			// Open detail section on click item label
 			transactItems[i].addEventListener("click", function() {
 				console.log("--- transactItems[i].onclick ---");
@@ -291,27 +267,60 @@ window.addEventListener("load", function() {
 	}
 
 	// --- 2.3 REPORT SECTION (sec-3) ---
-	// --- 2.3.1 OPEN & CLOSE REPORTS PANEL ---
-	var reportsSec = document.querySelectorAll(".today-reports-sec");
-	for(let i = 0; reportsSec[i]; i++) {
-		reportsSec[i].addEventListener("click", function() {
-			console.log("--- reportsSec[i].onclick() ---");
-			// Unclickable until successfully fetched data.
-			if(this.nextElementSibling.children.length <= 1) {
-				return false;
+	// --- 2.3.1 OPEN & CLOSE REPORT-ACCOUNT PANEL ---
+	var accSec = document.querySelector(".report-account");
+	accSec.addEventListener("click", function() {
+		console.log("--- accSec.onclick() ---");
+		// Unclickable until successfully fetched data.
+		if(this.nextElementSibling.children.length <= 1) {
+			return false;
+		}
+		let hiddenDetail = this.nextElementSibling,
+				mh = hiddenDetail.style.maxHeight;
+		if(mh == "0px"
+				&& !this.classList.contains("_report-active")) {
+			hiddenDetail.style.maxHeight = hiddenDetail.scrollHeight + "px";
+		} else if(mh != "0px"
+				&& this.classList.contains("_report-active")) {
+			hiddenDetail.style.maxHeight = 0;
+		}
+		this.classList.toggle("_report-active");
+	});
+	// --- 2.3.2 INCOME/EXPENSE REPORT TAB SELECTION ---
+	var genTabs = document.querySelectorAll(".report-general-tab"),
+			genOutputs = document.querySelectorAll(".output-sec");
+	tabAndOutputDisplay(genTabs, genOutputs, "click", "_gentab-active", "_output-active");
+	// --- 2.3.3 DATA SHEET TAB AND OUTPUT DISPLAYING ---
+	var sheetTabs = document.querySelectorAll(".report-tab"),
+			sheets = document.querySelectorAll(".report-sheet");
+	tabAndOutputDisplay(sheetTabs, sheets, "click", "_sheettab-active", "_sheet-active");
+
+function tabAndOutputDisplay(tabs, outputs, eventListener, tabClass, outputClass) {
+	console.log("--- tabAndOutputDisplay() ---");
+	if(typeof tabs != 'object'
+			|| typeof outputs != 'object'
+			|| typeof eventListener != 'string'
+			|| typeof tabClass != 'string'
+			|| typeof outputClass != 'string') {
+		console.log("Error: incorrect argument!");
+		return false;
+	}
+	for(let i = 0; tabs[i]; i++) {
+		tabs[i].addEventListener(eventListener, function() {
+			console.log("--- tabs[i].onclick ---");
+			// find index of tab and its output
+			let x = this;
+			for(var i = 0; (x = x.previousElementSibling); i++);
+			// add class to selected tab and its output
+			this.classList.add(tabClass);
+			outputs[i].classList.add(outputClass);
+			// remove unselected tab and its output class
+			for(let j = 0; tabs[j]; j++) {
+				if(j === i) {continue;}
+				tabs[j].classList.remove(tabClass);
+				outputs[j].classList.remove(outputClass);
 			}
-			let hiddenDetail = this.nextElementSibling,
-					mh = hiddenDetail.style.maxHeight;
-			if(mh == "0px"
-					&& !this.classList.contains("reports-active")) {
-				hiddenDetail.style.maxHeight = hiddenDetail.scrollHeight + "px";
-			} else if(mh != "0px"
-					&& this.classList.contains("reports-active")) {
-				hiddenDetail.style.maxHeight = 0;
-			}
-			this.classList.toggle("reports-active");
 		});
 	}
-	// --- 2.3.2 INCOME/EXPENSE REPORT TAB SELECTION ---
-
+}
 });
