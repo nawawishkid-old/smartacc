@@ -115,7 +115,30 @@
 								</div>
 							</article>
 						</div>
-						<div class="output-sec output-in"></div>
+						<div class="output-sec output-in">
+							<header>
+								<span>Total amount: ###</span><br>
+								<span>Transaction(s): ###</span>
+							</header>
+							<article>
+								<div class="report-folder">
+									<div class="report-tab-wrapper">
+										<div class="report-tab tab-necessity _sheettab-active">Income type</div>
+										<div class="report-tab tab-category">Category</div>
+										<div class="report-tab tab-subcategory">Subcategory</div>
+										<div class="report-tab tab-payee">Payer</div>
+									</div>
+									<div class="report-sheet-wrapper">
+										<div class="report-sheet sheet-necessity _sheet-active">
+											<div class="preloader"></div>
+										</div>
+										<div class="report-sheet sheet-category"></div>
+										<div class="report-sheet sheet-subcategory"></div>
+										<div class="report-sheet sheet-payee"></div>
+									</div>
+								</div>
+							</article>
+						</div>
 					</div>
 				<!--/div-->
 				<!--div class="today-reports-sec reports-account reports-active">
