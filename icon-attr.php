@@ -1,10 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<?php include("frame1-head.html");?>
 	<title>Icon Attribution | SMARTACC</title>
-	<link rel="stylesheet" type="text/css" href="css/index-style.css">
 	<style type="text/css">
 		header {min-height: 3em;}
 		main {
@@ -58,17 +56,7 @@
 	</style>
 </head>
 <body>
-<header class="index-header col-12 col-m-12">
-    <section class="header-left">
-    	<a href="index.php" title="back">
-    		<img class="icon" src="media/icon-prev@48px-fff.png" title="Back" alt="Back icon"/>
-    	</a>
-    </section>
-    <section class="header-center">
-      <a href="index.php"><h1>Smartacc</h1></a>
-    </section>
-    <section class="header-right"></section>
-	</header>
+	<?php include("frame2-header.html");?>
 	<main>
 		<div class="attr">
 			<div class="img">
