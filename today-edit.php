@@ -1,10 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<?php include("frame1-head.html");?>
 	<title>Edit Transaction | SMARTACC</title>
-	<link rel="stylesheet" type="text/css" href="css/index-style.css">
 	<link rel="stylesheet" type="text/css" href="css/new-and-edit-style.css">
 </head>
 <body>
@@ -87,21 +85,10 @@
 		// --- Set current time for 'timePicker' [INPUT]
 		date_default_timezone_set("Asia/Bangkok");
 		$current_time = date_format(date_create(), "H:i");
+
+		include("frame2-header.html");
 	?>
-	<header class="index-header col-12 col-m-12">
-    <section class="header-left">
-    	<a href="index.php" title="back">
-    		<img class="icon" src="media/icon-prev@48px-fff.png" title="Back" alt="Back icon"/>
-    	</a>
-    </section>
-    <section class="header-center">
-      <a href="index.php"><h1>Smartacc</h1></a>
-    </section>
-    <section class="header-right">
-    	<!--section>img class="icon" src="/media/smartacc/icon-dotted-menu@48px-404040-min.png" title="More" alt="More icon"/-->
-    </section>
-	</header>
-	<main style="width: 100%; height: 80%; overflow: auto;">
+	<main>
 		<section class="edit-transact-sec">
 			<input type="hidden" name="id" class="input" value="<?php echo $encrypted_id; ?>">
 			<section class="in ex tr input-sec sec-transaction-type">
