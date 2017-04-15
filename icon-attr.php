@@ -56,7 +56,7 @@
 	</style>
 </head>
 <body>
-	<?php include("frame2-header.html");?>
+	<?php include("frame1-header.html");?>
 	<main>
 		<div class="attr">
 			<div class="img">
@@ -112,5 +112,6 @@
 			All of these PNG images are optimized by <a href="http://optimizilla.com/">Optimizilla</a>
 		</span>
 	</footer>
+	<script src="js/frame1-js.js"></script>
 </body>
 </html>
